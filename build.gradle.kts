@@ -7,7 +7,7 @@
  */
 
 val versions = mapOf("slf4j" to "1.7.25", "logback" to "1.2.3", "jackson" to "2.9.8",
-        "classgraph" to "4.8.87", "lombok" to "1.18.12", "junit" to "4.13")
+                     "classgraph" to "4.8.87", "lombok" to "1.18.12", "junit" to "4.13")
 
 plugins {
     `java-library`
@@ -19,6 +19,8 @@ repositories {
     mavenCentral()
     jcenter()
 }
+
+group = "io.github.zero88"
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
