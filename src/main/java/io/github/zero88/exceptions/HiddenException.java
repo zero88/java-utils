@@ -21,7 +21,7 @@ public class HiddenException extends SneakyErrorCodeException {
     }
 
     public HiddenException(@NonNull SneakyErrorCodeException e) {
-        this(e.getErrorCode(), e.getMessage(), e);
+        this(e.errorCode(), e.getMessage(), e);
     }
 
 }

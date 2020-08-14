@@ -5,13 +5,22 @@
  * For more details take a look at the Java Libraries chapter in the Gradle
  * User Manual available at https://docs.gradle.org/6.5/userguide/java_library_plugin.html
  */
+val versions = mapOf("slf4j" to "1.7.30", "logback" to "1.2.3", "jackson" to "2.9.8", "classgraph" to "4.8.87",
+                     "lombok" to "1.18.12", "junit" to "4.13", "sonarqube" to "3.0")
 
-val versions = mapOf("slf4j" to "1.7.25", "logback" to "1.2.3", "jackson" to "2.9.8",
-                     "classgraph" to "4.8.87", "lombok" to "1.18.12", "junit" to "4.13")
 
 plugins {
     `java-library`
+    `maven-publish`
+    jacoco
+    signing
+    id("org.sonarqube") version "3.0"
 }
+val version: String by project
+val semanticVersion: String by project
+
+project.group = "io.github.zero88"
+project.version = "$version-$semanticVersion"
 
 repositories {
     mavenLocal()
@@ -20,16 +29,16 @@ repositories {
     jcenter()
 }
 
-group = "io.github.zero88"
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    withJavadocJar()
+    withSourcesJar()
+}
 
 dependencies {
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
     api("org.slf4j:slf4j-api:${versions["slf4j"]}")
-
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    compileOnly("ch.qos.logback:logback-classic:${versions["logback"]}")
-    compileOnly("io.github.classgraph:classgraph:${versions["classgraph"]}")
-    compileOnly("com.fasterxml.jackson.core:jackson-annotations:${versions["jackson"]}")
+    api("io.github.classgraph:classgraph:${versions["classgraph"]}")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:${versions["jackson"]}")
     compileOnly("org.projectlombok:lombok:${versions["lombok"]}")
     annotationProcessor("org.projectlombok:lombok:${versions["lombok"]}")
 
@@ -37,4 +46,61 @@ dependencies {
     testImplementation("ch.qos.logback:logback-classic:${versions["logback"]}")
     testCompileOnly("org.projectlombok:lombok:${versions["lombok"]}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions["lombok"]}")
+}
+
+publishing {
+    publications {
+        repositories {
+            create<MavenPublication>("maven") {
+                groupId = project.group as String?
+                artifactId = project.name
+                version = project.version as String?
+                from(components["java"])
+
+                versionMapping {
+                    usage("java-api") {
+                        fromResolutionOf("runtimeClasspath")
+                    }
+                    usage("java-runtime") {
+                        fromResolutionResult()
+                    }
+                }
+                pom {
+                    name.set(project.name)
+                    description.set("Java Utilities")
+                    url.set("https://github.com/zero88/java-utils")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("https://github.com/zero88/java-utils/blob/master/LICENSE")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("zero88")
+                            email.set("sontt246@gmail.com")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:git://git@github.com:zero88/java-utils.git")
+                        developerConnection.set("scm:git:ssh://git@github.com:zero88/java-utils.git")
+                        url.set("https://github.com/zero88/java-utils")
+                    }
+                }
+            }
+            maven {
+                val releasesRepoUrl = "$buildDir/repos/releases"
+                val snapshotsRepoUrl = "$buildDir/repos/snapshots"
+                url = uri(if (project.hasProperty("release")) releasesRepoUrl else snapshotsRepoUrl)
+            }
+        }
+    }
+}
+
+signing {
+    val signingKey: String? by project
+    val signingPassword: String? by project
+    val signingId: String? by project
+    useInMemoryPgpKeys(signingId, signingKey, signingPassword)
+    sign(publishing.publications["maven"])
 }

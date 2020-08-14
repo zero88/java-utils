@@ -5,11 +5,13 @@ import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Getter
+@Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class SneakyErrorCodeException extends SneakyException {
+public class SneakyErrorCodeException extends SneakyException implements ErrorCodeException {
 
     @Include
     private final ErrorCode errorCode;

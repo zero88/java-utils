@@ -56,7 +56,7 @@ public class ReflectionMethodTest {
             final SneakyErrorCodeException cause = (SneakyErrorCodeException) e.getCause();
             Assert.assertNotNull(cause);
             Assert.assertEquals("hey", cause.getMessage());
-            Assert.assertEquals(ErrorCode.FILE_ERROR, cause.getErrorCode());
+            Assert.assertEquals(ErrorCode.FILE_ERROR, cause.errorCode());
             throw cause;
         }
     }
@@ -69,7 +69,7 @@ public class ReflectionMethodTest {
             ReflectionMethod.execute(mock, method, Void.class, Collections.singletonList(String.class), "hey");
         } catch (SneakyErrorCodeException e) {
             Assert.assertNull(e.getMessage());
-            Assert.assertEquals(ErrorCode.REFLECTION_ERROR, e.getErrorCode());
+            Assert.assertEquals(ErrorCode.REFLECTION_ERROR, e.errorCode());
             Assert.assertEquals("hey", e.getCause().getMessage());
             throw e.getCause();
         }
