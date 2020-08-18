@@ -98,9 +98,10 @@ publishing {
 }
 
 signing {
-    val signingKey: String? by project
-    val signingPassword: String? by project
-    val signingId: String? by project
-    useInMemoryPgpKeys(signingId, signingKey, signingPassword)
+//    val signingKey: String? by project
+//    val signingPassword: String? by project
+//    val signingId: String? by project
+//    println("$signingId - $signingPassword")
+    useGpgCmd()
     sign(publishing.publications["maven"])
 }
