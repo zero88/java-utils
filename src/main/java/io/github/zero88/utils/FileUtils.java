@@ -291,7 +291,7 @@ public final class FileUtils {
     /**
      * Recompute data dir
      *
-     * @param defaultDataDir
+     * @param defaultDataDir Default data dir
      * @param dataDir        Given data dir
      * @param resolvePath    Current folder might in absolute or relative to
      * @return new data dir path with normalize file name

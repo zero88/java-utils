@@ -28,10 +28,7 @@ final class InternalErrorCode implements ErrorCode {
         if (!(o instanceof ErrorCode)) {
             return false;
         }
-        final ErrorCode other = (ErrorCode) o;
-        final Object this$code = this.code();
-        final Object other$code = other.code();
-        return Objects.equals(this$code, other$code);
+        return Objects.equals(this.code(), ((ErrorCode) o).code());
     }
 
 }

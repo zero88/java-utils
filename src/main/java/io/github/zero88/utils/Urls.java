@@ -13,11 +13,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import io.github.zero88.exceptions.InvalidUrlException;
-import io.github.zero88.exceptions.SneakyErrorCodeException;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 
 /**
  * URL Utilities.
@@ -210,15 +210,10 @@ public final class Urls {
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.3">Unreserved Characters</a>
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.4">When to Encode or Decode</a>
      */
+    @SneakyThrows(UnsupportedEncodingException.class)
     public static String encode(String plain) {
         Objects.requireNonNull(plain, "Cannot encode null object");
-        String encoded;
-        try {
-            encoded = URLEncoder.encode(plain, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException uee) {
-            throw new SneakyErrorCodeException("Charset not found while encoding string: " + StandardCharsets.UTF_8,
-                                               uee);
-        }
+        String encoded = URLEncoder.encode(plain, StandardCharsets.UTF_8.name());
         for (Map.Entry<String, String> rule : ENCODING_RULES.entrySet()) {
             encoded = applyRule(encoded, rule.getKey(), rule.getValue());
         }
@@ -231,14 +226,10 @@ public final class Urls {
      * @param encoded Encoded value to decode
      * @return Plain text
      */
+    @SneakyThrows(UnsupportedEncodingException.class)
     public static String decode(String encoded) {
         Objects.requireNonNull(encoded, "Cannot decode null object");
-        try {
-            return URLDecoder.decode(encoded, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException uee) {
-            throw new SneakyErrorCodeException("Charset not found while decoding string: " + StandardCharsets.UTF_8,
-                                               uee);
-        }
+        return URLDecoder.decode(encoded, StandardCharsets.UTF_8.name());
     }
 
     /**

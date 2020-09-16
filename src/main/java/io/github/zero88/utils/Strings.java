@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 
 /**
  * Strings Utilities.
@@ -292,15 +293,11 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
+    @SneakyThrows(UnsupportedEncodingException.class)
     public static String convertToString(InputStream inputStream) {
-        try {
-            return Objects.isNull(inputStream)
-                   ? null
-                   : FileUtils.convertToByteArray(inputStream).toString(StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException ex) {
-            logger.trace("Impossible", ex);
-            return null;
-        }
+        return Objects.isNull(inputStream)
+               ? null
+               : FileUtils.convertToByteArray(inputStream).toString(StandardCharsets.UTF_8.name());
     }
 
     /**
