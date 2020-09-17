@@ -3,6 +3,11 @@ name: build
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - '.github/**'
+      - 'CHANGELOG.md'
+      - 'README.md'
+      - 'LICENSE'
   pull_request:
     types: [ opened, synchronize, reopened, closed ]
     branches: [ master ]
@@ -37,9 +42,14 @@ jobs:
           semanticVersion=$($isReleasePR == true && echo "" || echo $cfgSemantic)
           [[ "$cfgVer$cfgSemantic" == "$version$semanticVersion" ]] && same=true || same=false
 
-          echo "Should Validate Version with semantic..."
-          echo "Version is same? $same"
+          echo "Information:"
+          echo "- Is on master? $isPushOnMaster"
+          echo "- Is after release merged? $isAfterReleaseMerged"
+          echo "- Is PR? $isPR"
+          echo "- Is Release PR? $isReleasePR"
+          echo "- Does Release PR has correct version? $same"
           [[ $same == false && $isReleasePR == false ]] && { echo "Version is changed without release branch"; exit 1; }
+
           echo ::set-output name=isPR::$isPR
           echo ::set-output name=isReleasePR::$isReleasePR
           echo ::set-output name=version::$version
