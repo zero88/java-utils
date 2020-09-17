@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       branch: ${{ steps.check.outputs.branch }}
+      isOnMaster: ${{ steps.check.outputs.isOnMaster }}
+      isSkipPublish: ${{ steps.check.outputs.isSkipPublish }}
       isPR: ${{ steps.check.outputs.isPR }}
       isReleasePR: ${{ steps.check.outputs.isReleasePR }}
       version: ${{ steps.checkVersion.outputs.version }}
@@ -34,22 +36,25 @@ jobs:
         shell: bash
         run: |
           commitMsg="${{ github.event.head_commit.message }}"
-          isPushOnMaster=${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+          isOnMaster=${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
           isReleaseCommit=$(echo $commitMsg | grep -P -q '^Merge pull request #\d+ from .+/release/.+$' && echo 1 || echo 0)
-          [[ $isPushOnMaster == true && $isReleaseCommit == 1 ]] && isAfterReleaseMerged=true || isAfterReleaseMerged=false
+          isSkipPublish=$(echo $commitMsg | grep -P -q '^<skip_publish>.+$' && echo true || echo false)
+          [[ $isOnMaster == true && $isReleaseCommit == 1 ]] && isAfterReleaseMerged=true || isAfterReleaseMerged=false
           isPR=${{ github.event_name == 'pull_request' }}
           isReleasePR=${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/') }}
-          [[ $isPushOnMaster == true ]] && branch="master" || branch="${{ github.head_ref }}"
+          [[ $isOnMaster == true ]] && branch="master" || branch="${{ github.head_ref }}"
 
           echo "Information:"
-          echo "- Is on master? $isPushOnMaster"
+          echo "- Is on master? $isOnMaster"
+          echo "- Is skip publish? $isSkipPublish"
           echo "- Is after release merged? $isAfterReleaseMerged"
           echo "- Is PR? $isPR"
           echo "- Is Release PR? $isReleasePR"
           echo "- Branch? $branch"
 
           echo ::set-output name=branch::$branch
-          echo ::set-output name=isPushOnMaster::$isPushOnMaster
+          echo ::set-output name=isOnMaster::$isOnMaster
+          echo ::set-output name=isSkipPublish::$isSkipPublish
           echo ::set-output name=isPR::$isPR
           echo ::set-output name=isReleasePR::$isReleasePR
           echo ::set-output name=isAfterReleaseMerged::$isAfterReleaseMerged
@@ -128,11 +133,13 @@ jobs:
         run: ./gradlew test jacocoTestReport
 
       - name: SonarQube
+        if: needs.context.outputs.isSkipPublish != 'true'
         run: ./gradlew sonarqube -Dsonar.login=${{ secrets.OSS_SONARQUBE_TOKEN }} -Dsonar.branch.name=${{ needs.context.outputs.branch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache SonarCloud packages
+        if: needs.context.outputs.isSkipPublish != 'true'
         uses: actions/cache@v1
         with:
           path: ~/.sonar/cache
@@ -149,7 +156,7 @@ jobs:
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v2
-        if: needs.context.outputs.isPR != 'true'
+        if: needs.context.outputs.isOnMaster == 'true' && needs.context.outputs.isSkipPublish != 'true'
         with:
           git_user_signingkey: true
         env:
@@ -157,7 +164,7 @@ jobs:
           PASSPHRASE: ${{ secrets.CI_GPG_PASSPHARSE }}
 
       - name: Publish GitHub Package
-        if: needs.context.outputs.isPR != 'true'
+        if: needs.context.outputs.isOnMaster == 'true' && needs.context.outputs.isSkipPublish != 'true'
         run: |
           ./gradlew publish -Psigning.gnupg.homeDir=/home/runner/.gnupg \
                             -Psigning.gnupg.keyName=${{ steps.import_gpg.outputs.keyid }} \
@@ -167,7 +174,7 @@ jobs:
                             -Pnexus.password=${{ secrets.OSS_GITHUB_TOKEN }}
 
       - name: Publish Sonatype OSSRH
-        if: needs.context.outputs.isPR != 'true'
+        if: needs.context.outputs.isOnMaster == 'true' && needs.context.outputs.isSkipPublish != 'true'
         run: |
           ./gradlew publish -Psigning.gnupg.homeDir=/home/runner/.gnupg \
                             -Psigning.gnupg.keyName=${{ steps.import_gpg.outputs.keyid }} \

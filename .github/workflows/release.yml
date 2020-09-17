@@ -9,20 +9,20 @@ jobs:
   context:
     runs-on: ubuntu-latest
     outputs:
-      projectName: ${{ steps.grepProject.outputs.projectName }}
-      projectVersion: ${{ steps.grepProject.outputs.targetVersion }}
-      commitId: ${{ github.sha }}
+      branch: ${{ steps.check.outputs.branch }}
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Check
+        id: check
         shell: bash
         run: |
           cfgVer=$(grep version gradle.properties | cut -d'=' -f2)
           cfgSemantic=$(grep semanticVersion gradle.properties | cut -d'=' -f2)
           version=$(echo "${{ github.ref }}" | sed -e "s#^refs/tags/v##")
           [[ "$cfgVer$cfgSemantic" == $version ]] || { echo "Release version and tag version is not match"; exit 1; }
+          echo ::set-output name=branch::v$version
 
   build:
     runs-on: ubuntu-latest
@@ -46,16 +46,15 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew clean build -x test \
-                          -Pversion=${{ needs.context.outputs.version }} \
-                          -PsemanticVersion=${{needs.context.outputs.semanticVersion }} \
-                          -PbuildBy="GitHub Action" -PbuildHash=${{ github.sha }}
+          ./gradlew clean build -x test -PbuildBy="GitHub Action" -PbuildHash=${{ github.sha }}
 
       - name: Test
         run: ./gradlew test jacocoTestReport
 
       - name: SonarQube
-        run: ./gradlew sonarqube -Dsonar.login=${{ secrets.OSS_SONARQUBE_TOKEN }} -Dsonar.branch.name=${{ github.head_ref }}
+        run: ./gradlew sonarqube -Dsonar.login=${{ secrets.OSS_SONARQUBE_TOKEN }} -Dsonar.branch.name=${{ needs.context.outputs.branch }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish GitHub Package
         run: |
