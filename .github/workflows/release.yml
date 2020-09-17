@@ -101,6 +101,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: master
+          token: ${{ secrets.OSS_GITHUB_TOKEN }}
 
       - name: Import GPG key
         id: import_gpg
