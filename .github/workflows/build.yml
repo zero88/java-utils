@@ -87,6 +87,8 @@ jobs:
       - name: SonarQube
         if: needs.context.outputs.isPR != 'true'
         run: ./gradlew sonarqube -Dsonar.login=${{ secrets.OSS_SONARQUBE_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache SonarCloud packages
         if: needs.context.outputs.isPR != 'true'
