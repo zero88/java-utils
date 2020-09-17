@@ -14,11 +14,7 @@ final class InternalErrorCode implements ErrorCode {
     private final String code;
 
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final Object $code = this.code();
-        result = result * PRIME + ($code == null ? 43 : $code.hashCode());
-        return result;
+        return this.code().hashCode();
     }
 
     public boolean equals(final Object o) {
