@@ -11,37 +11,46 @@ jobs:
   context:
     runs-on: ubuntu-latest
     outputs:
-      isPR: ${{ steps.checkBranch.outputs.isPR }}
-      isReleasePR: ${{ steps.checkBranch.outputs.isReleasePR }}
-      version: ${{ steps.checkBranch.outputs.version }}
-      semanticVersion: ${{ steps.checkBranch.outputs.semanticVersion }}
-      shouldRun: ${{ steps.checkBranch.outputs.isSameVersion == 'true' }}
+      isPR: ${{ steps.check.outputs.isPR }}
+      isReleasePR: ${{ steps.check.outputs.isReleasePR }}
+      version: ${{ steps.check.outputs.version }}
+      semanticVersion: ${{ steps.check.outputs.semanticVersion }}
+      shouldBuild: ${{ steps.check.outputs.isSameVersion == 'true' && steps.check.outputs.isAfterReleaseMerged == 'false' }}
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check branch
-        id: checkBranch
+      - name: Check
+        id: check
         shell: bash
         run: |
+          commitMsg="${{ github.event.commits[0].message }}"
+          isPushOnMaster=${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+          isReleaseCommit=$(echo $commitMsg | grep -P -q '^Merge pull request #\d+ from .+/release/.+$' && echo 1 || echo 0)
+          [[ $isPushOnMaster == true && $isReleaseCommit == 1 ]] && isAfterReleaseMerged=true || isAfterReleaseMerged=false
+
+          isPR=${{ github.event_name == 'pull_request' }}
+          isReleasePR=${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/') }}
           cfgVer=$(grep version gradle.properties | cut -d'=' -f2)
           cfgSemantic=$(grep semanticVersion gradle.properties | cut -d'=' -f2)
-          version=$([[ "${{ github.head_ref }}" =~ "release/" ]] && echo $(echo "${{ github.head_ref }}" | sed -e "s#release/##") || echo $cfgVer)
-          semanticVersion=$([[ "${{ github.head_ref }}" =~ "release/" ]] && echo "" || echo $cfgSemantic)
+          version=$($isReleasePR == true && echo $(echo "${{ github.head_ref }}" | sed -e "s#release/##") || echo $cfgVer)
+          semanticVersion=$($isReleasePR == true && echo "" || echo $cfgSemantic)
           [[ "$cfgVer$cfgSemantic" == "$version$semanticVersion" ]] && same=true || same=false
+
           echo "Should Validate Version with semantic..."
-          echo "Same version: $same"
-          [[ $same == false && ! "${{ github.head_ref }}" =~ "release/" ]] && { echo "Version is changed without release"; exit 1; }
-          echo ::set-output name=isPR::${{ github.event_name == 'pull_request' }}
-          echo ::set-output name=isReleasePR::${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/') }}
+          echo "Version is same? $same"
+          [[ $same == false && $isReleasePR == false ]] && { echo "Version is changed without release branch"; exit 1; }
+          echo ::set-output name=isPR::$isPR
+          echo ::set-output name=isReleasePR::$isReleasePR
           echo ::set-output name=version::$version
           echo ::set-output name=semanticVersion::$semanticVersion
           echo ::set-output name=isSameVersion::$same
+          echo ::set-output name=isAfterReleaseMerged::$isAfterReleaseMerged
 
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v2
-        if: ${{ steps.checkBranch.outputs.isSameVersion == 'false' }}
+        if: ${{ steps.check.outputs.isSameVersion == 'false' }}
         with:
           git_commit_gpgsign: true
         env:
@@ -49,15 +58,15 @@ jobs:
           PASSPHRASE: ${{ secrets.CI_GPG_PASSPHARSE }}
 
       - name: Replace version
-        if: ${{ steps.checkBranch.outputs.isSameVersion == 'false' }}
+        if: ${{ steps.check.outputs.isSameVersion == 'false' }}
         run: |
-          sed -i -e "s/version=.*/version=${{ steps.checkBranch.outputs.version }}/g" gradle.properties
-          sed -i -e "s/semanticVersion=.*/semanticVersion=${{ steps.checkBranch.outputs.semanticVersion }}/g" gradle.properties
+          sed -i -e "s/version=.*/version=${{ steps.check.outputs.version }}/g" gradle.properties
+          sed -i -e "s/semanticVersion=.*/semanticVersion=${{ steps.check.outputs.semanticVersion }}/g" gradle.properties
 
       - name: GIT commit and push
-        if: ${{ steps.checkBranch.outputs.isSameVersion == 'false' }}
+        if: ${{ steps.check.outputs.isSameVersion == 'false' }}
         run: |
-          git commit -S -am "<ci-auto-commit> Update version"
+          git commit -S -am "<ci-auto-commit> Correct version"
           git show --shortstat --show-signature
           git push
 
@@ -65,7 +74,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: context
-    if: needs.context.outputs.shouldRun == 'true' && (needs.context.outputs.isPR != 'true' || github.event.action != 'closed')
+    if: needs.context.outputs.shouldBuild == 'true' && (needs.context.outputs.isPR != 'true' || github.event.action != 'closed')
     steps:
       - uses: actions/checkout@v2
 
@@ -137,7 +146,7 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     needs: context
-    if: needs.context.outputs.shouldRun == 'true' && needs.context.outputs.isReleasePR == 'true' && github.event.action == 'closed' && github.event.pull_request.merged
+    if: needs.context.outputs.isReleasePR == 'true' && github.event.action == 'closed' && github.event.pull_request.merged
     steps:
       - uses: actions/checkout@v2
         with:
