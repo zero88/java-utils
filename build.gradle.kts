@@ -146,7 +146,6 @@ signing {
 
 nexusStaging {
     packageGroup = project.group as String?
-    stagingProfileId = project.group as String?
     username = project.property("nexus.username") as String?
     password = project.property("nexus.password") as String?
 }

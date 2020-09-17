@@ -45,8 +45,7 @@ jobs:
           java-version: 1.8
 
       - name: Build
-        run: |
-          ./gradlew clean build -x test -PbuildBy="GitHub Action" -PbuildHash=${{ github.sha }}
+        run: ./gradlew clean build -x test -PbuildBy="GitHub Action" -PbuildHash=${{ github.sha }}
 
       - name: Test
         run: ./gradlew test jacocoTestReport
@@ -76,10 +75,16 @@ jobs:
                             -Pnexus.password=${{ secrets.OSS_SONATYPE_PASSWORD }}
 
       - name: Promote release Sonatype OSSRH
-        run: ./gradlew closeAndReleaseRepository -Pnexus.username=${{ secrets.OSS_SONATYPE_USER }} -Pnexus.password=${{ secrets.OSS_SONATYPE_PASSWORD }}
+        run: |
+          ./gradlew closeAndReleaseRepository \
+                            -Pnexus.username=${{ secrets.OSS_SONATYPE_USER }} \
+                            -Pnexus.password=${{ secrets.OSS_SONATYPE_PASSWORD }} || echo 'Need to promote manually'
 
-      - name: Create Release
-        id: createRelease
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
