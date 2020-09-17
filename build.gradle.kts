@@ -61,6 +61,7 @@ project.tasks["sonarqube"].dependsOn("build", "jacocoTestReport")
 sonarqube {
     properties {
         property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.exclusions", "**/SystemHelper.java")
     }
 }
 

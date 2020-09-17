@@ -4,6 +4,9 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Just for test. Don't use it in production
+ */
 public interface SystemHelper {
 
     @SuppressWarnings("unchecked")
