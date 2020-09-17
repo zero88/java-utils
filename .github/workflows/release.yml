@@ -21,7 +21,7 @@ jobs:
         run: |
           cfgVer=$(grep version gradle.properties | cut -d'=' -f2)
           cfgSemantic=$(grep semanticVersion gradle.properties | cut -d'=' -f2)
-          version=$(echo "${{ github.head_ref }}" | sed -e "s#^v##")
+          version=$(echo "${{ github.ref }}" | sed -e "s#^refs/tags/v##")
           [[ "$cfgVer$cfgSemantic" == $version ]] || { echo "Release version and tag version is not match"; exit 1; }
 
   build:

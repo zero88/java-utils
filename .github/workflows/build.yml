@@ -33,7 +33,7 @@ jobs:
         id: check
         shell: bash
         run: |
-          commitMsg="${{ github.event.commits[0].message }}"
+          commitMsg="${{ github.event.head_commit.message }}"
           isPushOnMaster=${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
           isReleaseCommit=$(echo $commitMsg | grep -P -q '^Merge pull request #\d+ from .+/release/.+$' && echo 1 || echo 0)
           [[ $isPushOnMaster == true && $isReleaseCommit == 1 ]] && isAfterReleaseMerged=true || isAfterReleaseMerged=false
