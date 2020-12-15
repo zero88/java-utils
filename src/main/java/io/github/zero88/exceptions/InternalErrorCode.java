@@ -21,6 +21,9 @@ final class InternalErrorCode implements ErrorCode {
         if (o == this) {
             return true;
         }
+        if (o instanceof String) {
+            return Objects.equals(this.code(), o);
+        }
         if (!(o instanceof ErrorCode)) {
             return false;
         }
