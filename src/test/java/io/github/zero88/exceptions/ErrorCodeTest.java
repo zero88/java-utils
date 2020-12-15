@@ -3,12 +3,12 @@ package io.github.zero88.exceptions;
 import org.junit.Assert;
 import org.junit.Test;
 
-@SuppressWarnings("ALL")
 public class ErrorCodeTest {
 
     @Test
     public void equalsByString() {
-        Assert.assertEquals(ErrorCode.UNKNOWN_ERROR, "UNKNOWN_ERROR");
+        Object actual = "UNKNOWN_ERROR";
+        Assert.assertEquals(ErrorCode.UNKNOWN_ERROR, actual);
     }
 
     @Test
