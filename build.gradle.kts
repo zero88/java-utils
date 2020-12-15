@@ -3,8 +3,8 @@ import org.gradle.util.GradleVersion
 import java.time.Instant
 import java.util.jar.Attributes.Name
 
-val versions = mapOf("slf4j" to "1.7.30", "logback" to "1.2.3", "jackson" to "2.9.8", "classgraph" to "4.8.87",
-                     "lombok" to "1.18.12", "junit" to "4.13", "sonarqube" to "3.0")
+val versions = mapOf("slf4j" to "1.7.30", "logback" to "1.2.3", "jackson" to "2.12.0", "classgraph" to "4.8.87",
+                     "lombok" to "1.18.16", "junit" to "4.13", "sonarqube" to "3.0")
 
 plugins {
     `java-library`
@@ -137,6 +137,10 @@ publishing {
             }
         }
     }
+}
+
+tasks.withType<Sign>().configureEach {
+    onlyIf { project.hasProperty("release") }
 }
 
 signing {
