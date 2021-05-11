@@ -132,19 +132,19 @@ jobs:
       - name: Test
         run: ./gradlew test jacocoTestReport
 
-      - name: SonarQube
-        if: needs.context.outputs.isSkipPublish != 'true'
-        run: ./gradlew sonarqube -Dsonar.login=${{ secrets.OSS_SONARQUBE_TOKEN }} -Dsonar.branch.name=${{ needs.context.outputs.branch }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       - name: SonarQube
+#         if: needs.context.outputs.isSkipPublish != 'true'
+#         run: ./gradlew sonarqube -Dsonar.login=${{ secrets.OSS_SONARQUBE_TOKEN }} -Dsonar.branch.name=${{ needs.context.outputs.branch }}
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Cache SonarCloud packages
-        if: needs.context.outputs.isSkipPublish != 'true'
-        uses: actions/cache@v1
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+#       - name: Cache SonarCloud packages
+#         if: needs.context.outputs.isSkipPublish != 'true'
+#         uses: actions/cache@v1
+#         with:
+#           path: ~/.sonar/cache
+#           key: ${{ runner.os }}-sonar
+#           restore-keys: ${{ runner.os }}-sonar
 
       - name: Cache Gradle packages
         uses: actions/cache@v1
