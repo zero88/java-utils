@@ -1,9 +1,13 @@
 package io.github.zero88.exceptions;
 
 public class FileException extends SneakyErrorCodeException {
+    
+    protected FileException(ErrorCode errorCode, String message, Throwable e) {
+        super(errorCode, message, e);
+    }
 
     public FileException(String message, Throwable e) {
-        super(ErrorCode.FILE_ERROR, message, e);
+        this(ErrorCode.FILE_ERROR, message, e);
     }
 
     public FileException(String message) {
