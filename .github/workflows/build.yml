@@ -162,15 +162,15 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.CI_GPG_PRIVATE_KEY }}
           PASSPHRASE: ${{ secrets.CI_GPG_PASSPHARSE }}
 
-      - name: Publish GitHub Package
-        if: needs.context.outputs.isOnMaster == 'true' && needs.context.outputs.isSkipPublish != 'true'
-        run: |
-          ./gradlew publish -Psigning.gnupg.homeDir=/home/runner/.gnupg \
-                            -Psigning.gnupg.keyName=${{ steps.import_gpg.outputs.keyid }} \
-                            -Psigning.gnupg.passphrase=${{ secrets.CI_GPG_PASSPHARSE }} \
-                            -Pgithub \
-                            -Pnexus.username=${{ github.repository_owner }} \
-                            -Pnexus.password=${{ secrets.OSS_GITHUB_TOKEN }}
+#       - name: Publish GitHub Package
+#         if: needs.context.outputs.isOnMaster == 'true' && needs.context.outputs.isSkipPublish != 'true'
+#         run: |
+#           ./gradlew publish -Psigning.gnupg.homeDir=/home/runner/.gnupg \
+#                             -Psigning.gnupg.keyName=${{ steps.import_gpg.outputs.keyid }} \
+#                             -Psigning.gnupg.passphrase=${{ secrets.CI_GPG_PASSPHARSE }} \
+#                             -Pgithub \
+#                             -Pnexus.username=${{ github.repository_owner }} \
+#                             -Pnexus.password=${{ secrets.OSS_GITHUB_TOKEN }}
 
       - name: Publish Sonatype OSSRH
         if: needs.context.outputs.isOnMaster == 'true' && needs.context.outputs.isSkipPublish != 'true'
