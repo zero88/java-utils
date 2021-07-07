@@ -1,4 +1,4 @@
-package io.github.zero88.utils;
+package io.github.zero88.repl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -13,10 +13,9 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.github.zero88.utils.Reflections.ReflectionField;
-import io.github.zero88.utils.Reflections.ReflectionMethod;
-import io.github.zero88.utils.mock.MockChild;
-import io.github.zero88.utils.mock.MockParent;
+import io.github.zero88.utils.Functions;
+import io.github.zero88.mock.MockChild;
+import io.github.zero88.mock.MockParent;
 
 public class ReflectionsTest {
 

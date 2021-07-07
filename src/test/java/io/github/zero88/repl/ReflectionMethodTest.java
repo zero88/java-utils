@@ -1,7 +1,6 @@
-package io.github.zero88.utils;
+package io.github.zero88.repl;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,8 +8,7 @@ import org.junit.Test;
 import io.github.zero88.exceptions.ErrorCode;
 import io.github.zero88.exceptions.FileException;
 import io.github.zero88.exceptions.SneakyErrorCodeException;
-import io.github.zero88.utils.Reflections.ReflectionMethod;
-import io.github.zero88.utils.mock.MockReflection;
+import io.github.zero88.mock.MockReflection;
 
 public class ReflectionMethodTest {
 
@@ -24,12 +22,12 @@ public class ReflectionMethodTest {
     //        ReflectionMethod.execute("", null, JsonObject.class, Collections.singletonList(String.class), "s");
     //    }
 
-    //    @Test(expected = NullPointerException.class)
-    //    public void test_execute_method_output_null() throws NoSuchMethodException {
-    //        final MockReflection mock = new MockReflection("abc");
-    //        final Method method = mock.getClass().getDeclaredMethod("getId");
-    //        ReflectionMethod.execute(mock, method, null, Collections.singleton(JsonObject.class), new JsonObject());
-    //    }
+    @Test(expected = NullPointerException.class)
+    public void test_execute_method_output_null() throws NoSuchMethodException {
+        final MockReflection mock = new MockReflection("abc");
+        final Method method = mock.getClass().getDeclaredMethod("methodNoArgument");
+        ReflectionMethod.execute(mock, method, null, new Arguments().put(String.class, "hello"));
+    }
 
     @Test
     public void test_execute_method() throws NoSuchMethodException {
@@ -51,7 +49,7 @@ public class ReflectionMethodTest {
         final MockReflection mock = new MockReflection("abc");
         final Method method = mock.getClass().getDeclaredMethod("throwSneakyException", String.class);
         try {
-            ReflectionMethod.execute(mock, method, Void.class, Collections.singletonList(String.class), "hey");
+            ReflectionMethod.execute(mock, method, Void.class, new Arguments().put(String.class, "hey"));
         } catch (SneakyErrorCodeException e) {
             final SneakyErrorCodeException cause = (SneakyErrorCodeException) e.getCause();
             Assert.assertNotNull(cause);
@@ -66,7 +64,7 @@ public class ReflectionMethodTest {
         final MockReflection mock = new MockReflection("abc");
         final Method method = mock.getClass().getDeclaredMethod("throwUnknownException", String.class);
         try {
-            ReflectionMethod.execute(mock, method, Void.class, Collections.singletonList(String.class), "hey");
+            ReflectionMethod.execute(mock, method, Void.class, new Arguments().put(String.class, "hey"));
         } catch (SneakyErrorCodeException e) {
             Assert.assertNull(e.getMessage());
             Assert.assertEquals(ErrorCode.REFLECTION_ERROR, e.errorCode());

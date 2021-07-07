@@ -1,4 +1,4 @@
-package io.github.zero88.utils.mock;
+package io.github.zero88.mock;
 
 public class MockParent {
 

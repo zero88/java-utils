@@ -1,11 +1,10 @@
-package io.github.zero88.utils;
+package io.github.zero88.repl;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.github.zero88.utils.Reflections.ReflectionClass;
-import io.github.zero88.utils.mock.MockChild;
-import io.github.zero88.utils.mock.MockParent;
+import io.github.zero88.mock.MockChild;
+import io.github.zero88.mock.MockParent;
 
 public class ReflectionClassTest {
 

@@ -1,4 +1,4 @@
-package io.github.zero88.utils.mock;
+package io.github.zero88.mock;
 
 import io.github.zero88.exceptions.FileException;
 
@@ -16,6 +16,10 @@ public class MockReflection {
 
     public int methodNoArgument() {
         return 1;
+    }
+
+    public int methodWithArgument(String abc) {
+        return 2;
     }
 
     public void throwSneakyException(String hey) {
