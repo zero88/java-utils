@@ -16,12 +16,13 @@ import java.util.stream.IntStream;
  * @see Constructor
  * @see Method
  */
+@SuppressWarnings("unchecked")
 public final class Arguments {
 
     private final List<Class<?>> classes = new ArrayList<>();
     private final List<Object> values = new ArrayList<>();
 
-    public Arguments put(Class<?> argClass, Object argValue) {
+    public <T> Arguments put(Class<T> argClass, T argValue) {
         this.classes.add(Objects.requireNonNull(argClass, "Argument class must be not null"));
         this.values.add(argValue);
         return this;
@@ -60,12 +61,25 @@ public final class Arguments {
             throw new IllegalArgumentException(
                 "Given argument values does not match with the Method signature arguments");
         }
-        IntStream.range(0, methodArgs.length).boxed().forEach(i -> args.put(methodArgs[i], argValues[i]));
+        IntStream.range(0, methodArgs.length)
+                 .boxed()
+                 .forEach(i -> args.put(methodArgs[i], castArgValue(methodArgs[i], argValues[i])));
         return args;
     }
 
     private static Class<?>[] getMethodArgs(Method m) {
         return Objects.requireNonNull(m, "Given method cannot be null").getParameterTypes();
+    }
+
+    private static <T> T castArgValue(Class<?> argClass, Object argValue) {
+        if (argValue == null) {
+            return null;
+        }
+        if (ReflectionClass.assertDataType(argValue.getClass(), argClass)) {
+            return (T) argClass.cast(argValue);
+        }
+        throw new IllegalArgumentException(
+            "Invalid argument type. Signature[" + argClass.getName() + "] - Actual[" + argValue.getClass() + "]");
     }
 
 }
