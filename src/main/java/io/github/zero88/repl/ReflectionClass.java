@@ -49,6 +49,10 @@ public final class ReflectionClass {
         return Arrays.stream(packageNames).map(p -> p + ".").anyMatch(clazzName::startsWith);
     }
 
+    public static boolean isJavaLangObject(@NonNull Class<?> clazz) {
+        return clazz.isPrimitive() || clazz.isEnum() || "java.lang".equals(clazz.getPackage().getName());
+    }
+
     private static <T> Class<?> getPrimitiveClass(@NonNull Class<T> findClazz) {
         try {
             Field t = findClazz.getField("TYPE");
