@@ -2,6 +2,7 @@ plugins {
     id("io.github.zero88.gradle.oss") version "2.0.0"
     id("io.github.zero88.gradle.root") version "2.0.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    `java-test-fixtures`
 }
 
 object Libs {
