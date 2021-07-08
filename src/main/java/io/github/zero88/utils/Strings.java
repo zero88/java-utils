@@ -437,4 +437,38 @@ public final class Strings {
         return null;
     }
 
+    /**
+     * Pad left string with blank {@code ' '}
+     *
+     * @param inputString input string
+     * @param length      total length
+     * @return padded string
+     */
+    public static String padLeft(String inputString, int length) {
+        return doPadLeft(inputString, length, ' ');
+    }
+
+    /**
+     * Pad left string with {@code '0'}
+     *
+     * @param inputString input string
+     * @param length      total length
+     * @return padded string
+     */
+
+    public static String padLeftZeros(String inputString, int length) {
+        return doPadLeft(inputString, length, '0');
+    }
+
+    private static String doPadLeft(String inputString, int length, char c) {
+        if (inputString.length() >= length) {
+            return inputString;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() < length - inputString.length()) {
+            sb.append(c);
+        }
+        return sb.append(inputString).toString();
+    }
+
 }

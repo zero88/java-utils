@@ -167,4 +167,20 @@ public class StringsTest {
         assertEquals("test_abc", Strings.toSnakeCase("test_abc", false));
     }
 
+    @Test
+    public void test_pad_left() {
+        assertEquals("    123456", Strings.padLeft("123456", 10));
+    }
+
+    @Test
+    public void test_pad_left_zero() {
+        assertEquals("00123", Strings.padLeftZeros("00123", 5));
+    }
+
+    @Test
+    public void test_pad_left_with_no_modified() {
+        assertEquals("12345", Strings.padLeft("12345", 5));
+        assertEquals("12345", Strings.padLeft("12345", 4));
+    }
+
 }
