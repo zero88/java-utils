@@ -71,11 +71,14 @@ public final class Arguments {
         return Objects.requireNonNull(m, "Given method cannot be null").getParameterTypes();
     }
 
-    private static <T> T castArgValue(Class<?> argClass, Object argValue) {
+    static <T> T castArgValue(Class<?> argClass, Object argValue) {
         if (argValue == null) {
             return null;
         }
         if (ReflectionClass.assertDataType(argValue.getClass(), argClass)) {
+            if (argValue.getClass().isPrimitive() || argClass.isPrimitive()) {
+                return (T) argValue;
+            }
             return (T) argClass.cast(argValue);
         }
         throw new IllegalArgumentException(
