@@ -91,12 +91,12 @@ public final class Reflections {
         return Optional.ofNullable(loadFactory(ReflectionScanner.class)).orElseGet(SimpleScanner::new);
     }
 
-    static <T> T loadFactory(@NonNull Class<T> clazz) {
+    public static <T> T loadFactory(@NonNull Class<T> clazz) {
         return Optional.ofNullable(loadFactory(clazz, contextClassLoader()))
                        .orElseGet(() -> loadFactory(clazz, staticClassLoader()));
     }
 
-    static <T> T loadFactory(@NonNull Class<T> clazz, @NonNull ClassLoader classLoader) {
+    public static <T> T loadFactory(@NonNull Class<T> clazz, @NonNull ClassLoader classLoader) {
         ServiceLoader<T> factories = ServiceLoader.load(clazz, classLoader);
         return factories.iterator().hasNext() ? factories.iterator().next() : null;
     }

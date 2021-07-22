@@ -94,6 +94,22 @@ public final class ReflectionClass {
                                              .map(cls -> (T) cls);
     }
 
+    public static boolean hasClass(String cls) {
+        return hasClass(cls, Reflections.contextClassLoader(), Reflections.staticClassLoader());
+    }
+
+    public static boolean hasClass(String cls, ClassLoader... classLoaders) {
+        for (ClassLoader classLoader : classLoaders) {
+            try {
+                Class.forName(Objects.requireNonNull(cls), false, classLoader);
+                return true;
+            } catch (ClassNotFoundException e) {
+                //ignore
+            }
+        }
+        return false;
+    }
+
     public static <T> Class<T> findClass(String clazz) {
         try {
             return (Class<T>) Class.forName(Strings.requireNotBlank(clazz), true, Reflections.contextClassLoader());
