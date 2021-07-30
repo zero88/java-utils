@@ -1,6 +1,6 @@
 package io.github.zero88.exceptions;
 
-public class ReflectionException extends SneakyErrorCodeException {
+public class ReflectionException extends RuntimeErrorCodeException {
 
     public ReflectionException(String message, Throwable e) {
         super(ErrorCode.REFLECTION_ERROR, message, e);

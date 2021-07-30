@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import io.github.zero88.exceptions.ErrorCode;
 import io.github.zero88.exceptions.FileException;
-import io.github.zero88.exceptions.SneakyErrorCodeException;
+import io.github.zero88.exceptions.RuntimeErrorCodeException;
 import io.github.zero88.mock.MockReflection;
 
 public class ReflectionMethodTest {
@@ -50,8 +50,8 @@ public class ReflectionMethodTest {
         final Method method = mock.getClass().getDeclaredMethod("throwSneakyException", String.class);
         try {
             ReflectionMethod.execute(mock, method, Void.class, new Arguments().put(String.class, "hey"));
-        } catch (SneakyErrorCodeException e) {
-            final SneakyErrorCodeException cause = (SneakyErrorCodeException) e.getCause();
+        } catch (RuntimeErrorCodeException e) {
+            final RuntimeErrorCodeException cause = (RuntimeErrorCodeException) e.getCause();
             Assert.assertNotNull(cause);
             Assert.assertEquals("hey", cause.getMessage());
             Assert.assertEquals(ErrorCode.FILE_ERROR, cause.errorCode());
@@ -65,7 +65,7 @@ public class ReflectionMethodTest {
         final Method method = mock.getClass().getDeclaredMethod("throwUnknownException", String.class);
         try {
             ReflectionMethod.execute(mock, method, Void.class, new Arguments().put(String.class, "hey"));
-        } catch (SneakyErrorCodeException e) {
+        } catch (RuntimeErrorCodeException e) {
             Assert.assertNull(e.getMessage());
             Assert.assertEquals(ErrorCode.REFLECTION_ERROR, e.errorCode());
             Assert.assertEquals("hey", e.getCause().getMessage());

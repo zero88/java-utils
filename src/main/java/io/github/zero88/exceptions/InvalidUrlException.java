@@ -1,6 +1,6 @@
 package io.github.zero88.exceptions;
 
-public final class InvalidUrlException extends SneakyErrorCodeException {
+public final class InvalidUrlException extends RuntimeErrorCodeException {
 
     public InvalidUrlException(String message, Throwable e) {
         super(ErrorCode.URL_ERROR, message, e);

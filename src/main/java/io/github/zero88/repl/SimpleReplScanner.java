@@ -8,22 +8,28 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @SuppressWarnings("unchecked")
-public class SimpleScanner implements ReflectionScanner {
+public class SimpleReplScanner implements ReflectionScanner {
 
     @Override
-    public Stream<Class<?>> classStream(String pkgName, Predicate<Class<?>> classPredicate) {
-        InputStream is = Reflections.contextClassLoader().getResourceAsStream(pkgName.replaceAll("[.]", "/"));
+    public Stream<? extends Class<?>> classStream(String pkgName, boolean recursive,
+                                                  Predicate<Class<?>> classPredicate) {
+        final String loc = pkgName.replaceAll("[.]", "/");
+        InputStream is = Optional.ofNullable(Reflections.contextClassLoader().getResourceAsStream(loc))
+                                 .orElseGet(() -> Reflections.staticClassLoader().getResourceAsStream(loc));
         if (Objects.isNull(is)) {
             return Stream.empty();
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         return reader.lines()
                      .filter(line -> line.endsWith(".class"))
-                     .map(c -> ReflectionClass.findClass(pkgName + "." + c.substring(0, c.lastIndexOf('.'))));
+                     .map(c -> ReflectionClass.findClass(pkgName + "." + c.substring(0, c.lastIndexOf('.'))))
+                     .filter(Objects::nonNull)
+                     .filter(classPredicate);
     }
 
     @Override

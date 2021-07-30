@@ -8,6 +8,7 @@ plugins {
 object Libs {
 
     const val slf4j = "org.slf4j:slf4j-api:1.7.30"
+    const val jetbrainsAnnotation = "org.jetbrains:annotations:20.1.0"
     const val logback = "ch.qos.logback:logback-classic:1.2.3"
     const val jacksonAnnotation = "com.fasterxml.jackson.core:jackson-annotations:2.12.0"
     const val lombok = "org.projectlombok:lombok:1.18.16"
@@ -19,14 +20,20 @@ group = "io.github.zero88"
 
 repositories {
     mavenLocal()
+    maven { url = uri("https://maven-central-asia.storage-download.googleapis.com/maven2/") }
+    jcenter()
     maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
     mavenCentral()
-    jcenter()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
     api(Libs.slf4j)
     implementation(Libs.jacksonAnnotation)
+    implementation(Libs.jetbrainsAnnotation)
     compileOnly(Libs.lombok)
     annotationProcessor(Libs.lombok)
 

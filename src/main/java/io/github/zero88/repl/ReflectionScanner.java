@@ -8,7 +8,11 @@ import java.util.stream.Stream;
 
 public interface ReflectionScanner {
 
-    Stream<Class<?>> classStream(String packageName, Predicate<Class<?>> classPredicate);
+    default Stream<? extends Class<?>> classStream(String packageName, Predicate<Class<?>> classPredicate) {
+        return classStream(packageName, false, classPredicate);
+    }
+
+    Stream<? extends Class<?>> classStream(String packageName, boolean recursive, Predicate<Class<?>> classPredicate);
 
     <T> Stream<Constructor<T>> constructorStream(Class<T> cls, Predicate<Constructor<T>> constructorPredicate);
 

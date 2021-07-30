@@ -15,7 +15,7 @@ import io.github.zero88.utils.Strings;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
-public final class ReflectionField implements ReflectionExecutable {
+public final class ReflectionField implements ReflectionMember {
 
     /**
      * Find declared fields in given {@code class} that matches with filter
@@ -37,7 +37,7 @@ public final class ReflectionField implements ReflectionExecutable {
     }
 
     public static <T> T constantByName(@NonNull Class<?> clazz, String name) {
-        Predicate<Field> filter = Functions.and(Reflections.predicateConstant(),
+        Predicate<Field> filter = Functions.and(ReflectionMember.constantPredicate(),
                                                 f -> f.getName().equals(Strings.requireNotBlank(name)));
         return (T) stream(clazz, filter).map(field -> getConstant(clazz, field)).findFirst().orElse(null);
     }
@@ -61,7 +61,7 @@ public final class ReflectionField implements ReflectionExecutable {
 
     public static <T> Stream<T> streamConstants(@NonNull Class<?> clazz, @NonNull Class<T> fieldClass,
                                                 Predicate<Field> predicate) {
-        Predicate<Field> filter = Functions.and(Reflections.predicateConstant(),
+        Predicate<Field> filter = Functions.and(ReflectionMember.constantPredicate(),
                                                 f -> ReflectionClass.assertDataType(fieldClass, f.getType()));
         if (Objects.nonNull(predicate)) {
             filter = filter.and(predicate);
@@ -90,7 +90,7 @@ public final class ReflectionField implements ReflectionExecutable {
     }
 
     public static <T> List<T> getFieldValuesByType(@NonNull Object obj, @NonNull Class<T> searchType) {
-        Predicate<Field> predicate = Functions.and(Reflections.notModifiers(Modifier.STATIC),
+        Predicate<Field> predicate = Functions.and(ReflectionMember.notModifiers(Modifier.STATIC),
                                                    f -> ReflectionClass.assertDataType(f.getType(), searchType));
         return stream(obj.getClass(), predicate).map(f -> getFieldValue(obj, f, searchType))
                                                 .filter(Objects::nonNull)

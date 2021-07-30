@@ -287,7 +287,7 @@ public final class Strings {
     }
 
     /**
-     * Convert to string string.
+     * Convert to string.
      *
      * @param inputStream the input stream
      * @return the string

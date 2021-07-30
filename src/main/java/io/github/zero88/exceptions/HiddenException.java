@@ -2,7 +2,7 @@ package io.github.zero88.exceptions;
 
 import lombok.NonNull;
 
-public class HiddenException extends SneakyErrorCodeException {
+public class HiddenException extends RuntimeErrorCodeException {
 
     public HiddenException(ErrorCode errorCode, String message, Throwable e) {
         super(errorCode, message, e);
@@ -20,7 +20,7 @@ public class HiddenException extends SneakyErrorCodeException {
         this(null, e);
     }
 
-    public HiddenException(@NonNull SneakyErrorCodeException e) {
+    public HiddenException(@NonNull RuntimeErrorCodeException e) {
         this(e.errorCode(), e.getMessage(), e);
     }
 

@@ -18,7 +18,7 @@ import io.github.zero88.utils.Strings;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
-public final class ReflectionClass {
+public final class ReflectionClass implements ReflectionElement {
 
     /**
      * @param childClass Given child {@code Class}
@@ -56,7 +56,7 @@ public final class ReflectionClass {
     private static <T> Class<?> getPrimitiveClass(@NonNull Class<T> findClazz) {
         try {
             Field t = findClazz.getField("TYPE");
-            if (!Reflections.hasModifiers(Modifier.PUBLIC, Modifier.STATIC).test(t)) {
+            if (!ReflectionMember.hasModifiers(Modifier.PUBLIC, Modifier.STATIC).test(t)) {
                 return null;
             }
             Object primitiveClazz = t.get(null);
@@ -69,33 +69,39 @@ public final class ReflectionClass {
         return null;
     }
 
-    public static <T> Stream<Class<T>> stream(String packageName, Class<T> parentCls) {
-        return stream(packageName, parentCls, clazz -> true);
+    public static <T> Stream<Class<T>> stream(String pkgName, Class<T> parentCls) {
+        return stream(pkgName, parentCls, clazz -> true);
     }
 
     /**
      * Scan all classes in given package that matches annotation and sub class given parent class.
      *
      * @param <T>             Type of output
-     * @param packageName     Given package name
+     * @param pkgName         Given package name
      * @param parentCls       Given parent class. May {@code interface} class, {@code abstract} class or {@code null} if
      *                        none inherited
      * @param annotationClass Given annotation type class {@code @Target(ElementType.TYPE_USE)}
      * @return List of matching class
      */
-    public static <T> Stream<Class<T>> stream(String packageName, Class<T> parentCls,
+    public static <T> Stream<Class<T>> stream(String pkgName, Class<T> parentCls,
                                               @NonNull Class<? extends Annotation> annotationClass) {
-        return stream(packageName, parentCls, Reflections.hasAnnotation(annotationClass));
+        return stream(pkgName, parentCls, ReflectionElement.hasAnnotation(annotationClass));
     }
 
-    public static <T> Stream<Class<T>> stream(String pkgName, Class<T> parentCls, @NonNull Predicate<Class<?>> filter) {
-        return (Stream<Class<T>>) Reflections.loadScanner()
-                                             .classStream(pkgName, filter.and(cls -> assertDataType(cls, parentCls)))
-                                             .map(cls -> (T) cls);
+    public static <T> Stream<Class<T>> stream(String pkgName, Class<T> parentCls, @NonNull Predicate<Class<T>> filter) {
+        return stream(Reflections.loadScanner(), pkgName, parentCls, filter);
+    }
+
+    public static <T> Stream<Class<T>> stream(ReflectionScanner scanner, String pkgName, Class<T> parentCls,
+                                              @NonNull Predicate<Class<T>> filter) {
+        return (Stream<Class<T>>) scanner.classStream(pkgName, cls -> assertDataType(cls, parentCls))
+                                         .map(cls -> (Class<T>) cls)
+                                         .filter(filter)
+                                         .map(cls -> (T) cls);
     }
 
     public static boolean hasClass(String cls) {
-        return hasClass(cls, Reflections.contextClassLoader(), Reflections.staticClassLoader());
+        return hasClass(cls, Reflections.classLoaders());
     }
 
     public static boolean hasClass(String cls, ClassLoader... classLoaders) {
@@ -110,29 +116,29 @@ public final class ReflectionClass {
         return false;
     }
 
-    public static <T> Class<T> findClass(String clazz) {
-        try {
-            return (Class<T>) Class.forName(Strings.requireNotBlank(clazz), true, Reflections.contextClassLoader());
-        } catch (ClassNotFoundException | ClassCastException e) {
-            Reflections.LOGGER.trace("Not found class [" + clazz + "]", e);
-            return null;
+    public static <T> Class<T> findClass(String cls) {
+        return findClass(cls, Reflections.classLoaders());
+    }
+
+    public static <T> Class<T> findClass(String clazz, ClassLoader... classLoaders) {
+        for (ClassLoader classLoader : classLoaders) {
+            try {
+                return (Class<T>) Class.forName(Strings.requireNotBlank(clazz), true, classLoader);
+            } catch (ClassNotFoundException e) {
+                //ignore
+            }
         }
+        return null;
     }
 
     public static <T> T createObject(String clazz) {
         final Class<Object> aClass = findClass(clazz);
-        if (Objects.isNull(aClass)) {
-            return null;
-        }
-        return (T) createObject(aClass);
+        return Objects.isNull(aClass) ? null : (T) createObject(aClass);
     }
 
     public static <T> T createObject(String clazz, @NonNull Arguments arguments) {
         final Class<Object> aClass = findClass(clazz);
-        if (Objects.isNull(aClass)) {
-            return null;
-        }
-        return (T) createObject(aClass, arguments);
+        return Objects.isNull(aClass) ? null : (T) createObject(aClass, arguments);
     }
 
     public static <T> T createObject(Class<T> clazz) {
@@ -158,19 +164,14 @@ public final class ReflectionClass {
     public static <T> Silencer<T> createObject(@NonNull Class<T> clazz, @NonNull Arguments arguments,
                                                @NonNull Silencer<T> silencer) {
         try {
-            silencer.accept(createObject(clazz, arguments.argClasses(), arguments.argValues()), null);
+            final Constructor<T> constructor = clazz.getDeclaredConstructor(arguments.argClasses());
+            constructor.setAccessible(true);
+            silencer.accept(constructor.newInstance(arguments.argValues()), null);
         } catch (ReflectiveOperationException e) {
             silencer.accept(null, new HiddenException(
                 new ReflectionException("Cannot init instance of " + clazz.getName(), e)));
         }
         return silencer;
-    }
-
-    private static <T> T createObject(@NonNull Class<T> clazz, Class<?>[] classes, Object[] args)
-        throws ReflectiveOperationException {
-        final Constructor<T> constructor = clazz.getDeclaredConstructor(classes);
-        constructor.setAccessible(true);
-        return constructor.newInstance(args);
     }
 
 }

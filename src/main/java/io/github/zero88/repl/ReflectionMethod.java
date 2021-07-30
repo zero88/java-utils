@@ -14,24 +14,24 @@ import io.github.zero88.exceptions.ReflectionException;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
-public final class ReflectionMethod implements ReflectionExecutable {
+public final class ReflectionMethod implements ReflectionMember {
 
     /**
      * Execute static method
      *
-     * @param declareClass a declare class
-     * @param outputCls    an output class
-     * @param methodName   a method name
-     * @param args         a object arguments
-     * @param <T>          Type of output
+     * @param declareCls a declare class
+     * @param outputCls  an output class
+     * @param methodName a method name
+     * @param args       a object arguments
+     * @param <T>        Type of output
      * @return method result
      */
-    public static <T> T executeStatic(@NonNull Class<?> declareClass, @NonNull Class<T> outputCls,
+    public static <T> T executeStatic(@NonNull Class<?> declareCls, @NonNull Class<T> outputCls,
                                       @NonNull String methodName, Object... args) {
         final Predicate<Method> predicate = m -> m.getReturnType().equals(outputCls) && m.getName().equals(methodName);
-        return (T) find(predicate, declareClass).findFirst()
-                                                .map(method -> doExecute(null, method, Arguments.from(method, args)))
-                                                .orElse(null);
+        return (T) find(predicate, declareCls).findFirst()
+                                              .map(method -> doExecute(null, method, Arguments.from(method, args)))
+                                              .orElse(null);
     }
 
     /**
@@ -149,7 +149,7 @@ public final class ReflectionMethod implements ReflectionExecutable {
             method.setAccessible(true);
             return method.invoke(instance, args.argValues());
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw ReflectionExecutable.handleError(method, e);
+            throw ReflectionMember.handleError(method, e);
         }
     }
 

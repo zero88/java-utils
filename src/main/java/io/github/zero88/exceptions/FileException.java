@@ -1,6 +1,6 @@
 package io.github.zero88.exceptions;
 
-public class FileException extends SneakyErrorCodeException {
+public class FileException extends RuntimeErrorCodeException {
     
     protected FileException(ErrorCode errorCode, String message, Throwable e) {
         super(errorCode, message, e);

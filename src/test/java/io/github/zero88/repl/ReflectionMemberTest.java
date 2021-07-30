@@ -17,7 +17,7 @@ import io.github.zero88.utils.Functions;
 import io.github.zero88.mock.MockChild;
 import io.github.zero88.mock.MockParent;
 
-public class ReflectionsTest {
+public class ReflectionMemberTest {
 
     public static final Function<Predicate<Method>, List<Method>> MF = p -> ReflectionMethod.find(MockParent.class, p);
     public static final Function<Predicate<Field>, List<Field>> FF = p -> ReflectionField.find(MockChild.class, p);
@@ -148,11 +148,11 @@ public class ReflectionsTest {
     }
 
     private <T extends Member> Predicate<T> has(int... modifiers) {
-        return Reflections.hasModifiers(modifiers);
+        return ReflectionMember.hasModifiers(modifiers);
     }
 
     private <T extends Member> Predicate<T> not(int... modifiers) {
-        return Reflections.notModifiers(modifiers);
+        return ReflectionMember.notModifiers(modifiers);
     }
 
 }
