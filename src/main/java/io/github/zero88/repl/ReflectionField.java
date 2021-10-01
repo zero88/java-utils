@@ -8,6 +8,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
+
 import io.github.zero88.exceptions.ReflectionException;
 import io.github.zero88.utils.Functions;
 import io.github.zero88.utils.Strings;
@@ -24,25 +26,21 @@ public final class ReflectionField implements ReflectionMember {
      * @param predicate Given predicate
      * @return Stream of matching {@code fields}
      */
-    public static Stream<Field> stream(@NonNull Class<?> clazz, Predicate<Field> predicate) {
-        Stream<Field> stream = Stream.of(clazz.getDeclaredFields());
-        if (Objects.nonNull(predicate)) {
-            return stream.filter(predicate);
-        }
-        return stream;
+    public static Stream<Field> stream(@NotNull Class<?> clazz, Predicate<Field> predicate) {
+        return Reflections.loadScanner().fieldStream(clazz, predicate);
     }
 
-    public static List<Field> find(@NonNull Class<?> clazz, Predicate<Field> predicate) {
+    public static List<Field> find(@NotNull Class<?> clazz, Predicate<Field> predicate) {
         return stream(clazz, predicate).collect(Collectors.toList());
     }
 
-    public static <T> T constantByName(@NonNull Class<?> clazz, String name) {
+    public static <T> T constantByName(@NotNull Class<?> clazz, String name) {
         Predicate<Field> filter = Functions.and(ReflectionMember.constantPredicate(),
                                                 f -> f.getName().equals(Strings.requireNotBlank(name)));
         return (T) stream(clazz, filter).map(field -> getConstant(clazz, field)).findFirst().orElse(null);
     }
 
-    public static <T> List<T> getConstants(@NonNull Class<?> clazz, @NonNull Class<T> fieldClass) {
+    public static <T> List<T> getConstants(@NotNull Class<?> clazz, @NonNull Class<T> fieldClass) {
         return streamConstants(clazz, fieldClass).collect(Collectors.toList());
     }
 

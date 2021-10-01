@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.github.zero88.utils.Functions;
 import io.github.zero88.mock.MockChild;
 import io.github.zero88.mock.MockParent;
+import io.github.zero88.utils.Functions;
 
 public class ReflectionMemberTest {
 
@@ -112,7 +112,8 @@ public class ReflectionMemberTest {
 
     private <T extends Member> void assertModifiers(int expectedSize, String msg, Predicate<T> predicate,
                                                     Function<Predicate<T>, List<T>> func) {
-        List<T> list = func.apply(Functions.and(predicate, t -> !t.getName().contains("jacoco")));
+        List<T> list = func.apply(
+            Functions.and(predicate, t -> !t.getName().contains("jacoco"), m -> m.getDeclaringClass() != Object.class));
         System.out.println(list);
         Assert.assertEquals(msg, expectedSize, list.size());
     }

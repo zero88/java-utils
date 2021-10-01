@@ -24,6 +24,16 @@ public final class ReflectionClass implements ReflectionElement {
      * @param childClass Given child {@code Class}
      * @param superClass Give super {@code Class}
      * @return {@code true} if {@code childClass} is primitive class or class that sub of {@code superClass}
+     * @see #assertDataType(Class, Class)
+     */
+    public static boolean assertDataType(@NonNull String childClass, @NonNull Class<?> superClass) {
+        return assertDataType(findClass(childClass), superClass);
+    }
+
+    /**
+     * @param childClass Given child {@code Class}
+     * @param superClass Give super {@code Class}
+     * @return {@code true} if {@code childClass} is primitive class or class that sub of {@code superClass}
      * @see Class#isAssignableFrom(Class)
      */
     public static boolean assertDataType(@NonNull Class<?> childClass, @NonNull Class<?> superClass) {
@@ -50,7 +60,39 @@ public final class ReflectionClass implements ReflectionElement {
     }
 
     public static boolean isJavaLangObject(@NonNull Class<?> clazz) {
-        return clazz.isPrimitive() || clazz.isEnum() || "java.lang".equals(clazz.getPackage().getName());
+        return clazz.isPrimitive() || clazz.isEnum() ||
+               (!clazz.isArray() && "java.lang".equals(clazz.getPackage().getName()));
+    }
+
+    /**
+     * Return the java {@link java.lang.Class} object if the given class name is primitive
+     *
+     * @param className The class name
+     * @return a primitive class or {@code null} if not primitive
+     */
+    public static Class<?> parsePrimitiveType(String className) {
+        switch (className) {
+            case "boolean":
+                return boolean.class;
+            case "byte":
+                return byte.class;
+            case "short":
+                return short.class;
+            case "int":
+                return int.class;
+            case "long":
+                return long.class;
+            case "float":
+                return float.class;
+            case "double":
+                return double.class;
+            case "char":
+                return char.class;
+            case "void":
+                return void.class;
+            default:
+                return null;
+        }
     }
 
     private static <T> Class<?> getPrimitiveClass(@NonNull Class<T> findClazz) {
@@ -74,7 +116,7 @@ public final class ReflectionClass implements ReflectionElement {
     }
 
     /**
-     * Scan all classes in given package that matches annotation and sub class given parent class.
+     * Scan all classes in given package that matches annotation and subclasses given parent class.
      *
      * @param <T>             Type of output
      * @param pkgName         Given package name
@@ -105,6 +147,9 @@ public final class ReflectionClass implements ReflectionElement {
     }
 
     public static boolean hasClass(String cls, ClassLoader... classLoaders) {
+        if (Objects.nonNull(parsePrimitiveType(cls))) {
+            return true;
+        }
         for (ClassLoader classLoader : classLoaders) {
             try {
                 Class.forName(Objects.requireNonNull(cls), false, classLoader);
@@ -120,10 +165,14 @@ public final class ReflectionClass implements ReflectionElement {
         return findClass(cls, Reflections.classLoaders());
     }
 
-    public static <T> Class<T> findClass(String clazz, ClassLoader... classLoaders) {
+    public static <T> Class<T> findClass(String cls, ClassLoader... classLoaders) {
+        final Class<?> aClass = parsePrimitiveType(cls);
+        if (Objects.nonNull(aClass)) {
+            return (Class<T>) aClass;
+        }
         for (ClassLoader classLoader : classLoaders) {
             try {
-                return (Class<T>) Class.forName(Strings.requireNotBlank(clazz), true, classLoader);
+                return (Class<T>) Class.forName(Strings.requireNotBlank(cls), true, classLoader);
             } catch (ClassNotFoundException e) {
                 //ignore
             }

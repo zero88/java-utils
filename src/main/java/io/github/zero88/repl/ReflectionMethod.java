@@ -4,10 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.jetbrains.annotations.NotNull;
 
 import io.github.zero88.exceptions.ReflectionException;
 
@@ -97,12 +98,12 @@ public final class ReflectionMethod implements ReflectionMember {
      * @param predicate Given predicate
      * @return List of matching {@code methods}
      */
-    public static List<Method> find(@NonNull Class<?> clazz, Predicate<Method> predicate) {
-        return find(Optional.ofNullable(predicate).orElse(method -> true), clazz).collect(Collectors.toList());
+    public static List<Method> find(@NotNull Class<?> clazz, Predicate<Method> predicate) {
+        return find(predicate, clazz).collect(Collectors.toList());
     }
 
-    public static Stream<Method> find(@NonNull Predicate<Method> predicate, @NonNull Class<?> clazz) {
-        return Stream.of(clazz.getDeclaredMethods()).filter(predicate);
+    public static Stream<Method> find(Predicate<Method> predicate, @NotNull Class<?> clazz) {
+        return Reflections.loadScanner().methodStream(clazz, predicate);
     }
 
     /**

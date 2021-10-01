@@ -13,6 +13,12 @@ import io.github.zero88.mock.MockParent;
 public class ReflectionClassTest {
 
     @Test
+    public void test_assert_data_type_with_primitive_in_string() {
+        Assert.assertTrue(ReflectionClass.assertDataType("int", int.class));
+        Assert.assertTrue(ReflectionClass.assertDataType("int", Integer.class));
+    }
+
+    @Test
     public void test_assert_data_type_with_primitive() {
         Assert.assertTrue(ReflectionClass.assertDataType(int.class, int.class));
         Assert.assertTrue(ReflectionClass.assertDataType(int.class, Integer.class));
