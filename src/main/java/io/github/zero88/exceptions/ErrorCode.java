@@ -2,9 +2,9 @@ package io.github.zero88.exceptions;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import org.jetbrains.annotations.NotNull;
 
-import lombok.NonNull;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public interface ErrorCode extends Serializable {
 
@@ -17,6 +17,6 @@ public interface ErrorCode extends Serializable {
     ErrorCode INVALID_ARGUMENT = new InternalErrorCode("INVALID_ARGUMENT");
 
     @JsonValue
-    @NonNull String code();
+    @NotNull String code();
 
 }

@@ -8,9 +8,9 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import io.github.zero88.exceptions.ReflectionException;
+import org.jetbrains.annotations.NotNull;
 
-import lombok.NonNull;
+import io.github.zero88.exceptions.ReflectionException;
 
 /**
  * @see Member
@@ -37,7 +37,7 @@ public interface ReflectionMember {
         return hasModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL);
     }
 
-    static ReflectionException handleError(@NonNull Executable executable, @NonNull ReflectiveOperationException e) {
+    static ReflectionException handleError(@NotNull Executable executable, @NotNull ReflectiveOperationException e) {
         if (Reflections.LOGGER.isTraceEnabled()) {
             Reflections.LOGGER.trace("Cannot execute method " + executable.getName(), e);
         }

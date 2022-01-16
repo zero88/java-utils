@@ -9,11 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import io.github.zero88.utils.ServiceHelper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Reflections {
+
+    private Reflections() {}
 
     final static Logger LOGGER = LoggerFactory.getLogger(Reflections.class);
 

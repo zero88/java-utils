@@ -16,19 +16,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DateTimes {
+
+    private DateTimes() {}
 
     private static final Logger logger = LoggerFactory.getLogger(DateTimes.class);
 
-    public static boolean isRelatedToDateTime(@NonNull Class cls) {
+    public static boolean isRelatedToDateTime(@NotNull Class cls) {
         return TemporalAccessor.class.isAssignableFrom(cls) || Date.class.isAssignableFrom(cls) ||
                Calendar.class.isAssignableFrom(cls) || TimeZone.class.isAssignableFrom(cls);
     }
@@ -37,31 +35,31 @@ public final class DateTimes {
         return fromUTC(Instant.now());
     }
 
-    public static LocalDateTime fromUTC(@NonNull Instant instant) {
+    public static LocalDateTime fromUTC(@NotNull Instant instant) {
         return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
-    public static ZonedDateTime toUTC(@NonNull Date date) {
+    public static ZonedDateTime toUTC(@NotNull Date date) {
         return DateTimes.toUTC(date.toInstant());
     }
 
-    public static ZonedDateTime toUTC(@NonNull Instant date) {
+    public static ZonedDateTime toUTC(@NotNull Instant date) {
         return DateTimes.toUTC(date.atZone(ZoneId.systemDefault()));
     }
 
-    public static ZonedDateTime toUTC(@NonNull LocalDateTime time) {
+    public static ZonedDateTime toUTC(@NotNull LocalDateTime time) {
         return DateTimes.toUTC(time, ZoneId.systemDefault());
     }
 
-    public static ZonedDateTime toUTC(@NonNull LocalDateTime time, @NonNull ZoneId zoneId) {
+    public static ZonedDateTime toUTC(@NotNull LocalDateTime time, @NotNull ZoneId zoneId) {
         return DateTimes.toUTC(time.atZone(zoneId));
     }
 
-    public static ZonedDateTime toUTC(@NonNull ZonedDateTime dateTime) {
+    public static ZonedDateTime toUTC(@NotNull ZonedDateTime dateTime) {
         return DateTimes.toZone(dateTime, ZoneOffset.UTC);
     }
 
-    public static ZonedDateTime toZone(@NonNull ZonedDateTime dateTime, @NonNull ZoneId toZone) {
+    public static ZonedDateTime toZone(@NotNull ZonedDateTime dateTime, @NotNull ZoneId toZone) {
         return dateTime.withZoneSameInstant(toZone);
     }
 
@@ -73,7 +71,7 @@ public final class DateTimes {
         return Instant.now().toEpochMilli();
     }
 
-    public static OffsetDateTime from(@NonNull Instant instant) {
+    public static OffsetDateTime from(@NotNull Instant instant) {
         return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
@@ -84,27 +82,27 @@ public final class DateTimes {
      */
     public static class Iso8601Parser {
 
-        public static Instant parse(@NonNull String datetime) {
+        public static Instant parse(@NotNull String datetime) {
             return Instant.from(parseFromISO8601(datetime, DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         }
 
-        public static ZonedDateTime parseZonedDateTime(@NonNull String datetime) {
+        public static ZonedDateTime parseZonedDateTime(@NotNull String datetime) {
             return ZonedDateTime.from(parseFromISO8601(datetime, DateTimeFormatter.ISO_ZONED_DATE_TIME));
         }
 
-        public static OffsetDateTime parseDateTime(@NonNull String datetime) {
+        public static OffsetDateTime parseDateTime(@NotNull String datetime) {
             return OffsetDateTime.from(parseFromISO8601(datetime, DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         }
 
-        public static OffsetDateTime parseDate(@NonNull String date) {
+        public static OffsetDateTime parseDate(@NotNull String date) {
             return OffsetDateTime.from(parseFromISO8601(date, DateTimeFormatter.ISO_OFFSET_DATE));
         }
 
-        public static OffsetTime parseTime(@NonNull String time) {
+        public static OffsetTime parseTime(@NotNull String time) {
             return OffsetTime.from(parseFromISO8601(time, DateTimeFormatter.ISO_TIME));
         }
 
-        private static TemporalAccessor parseFromISO8601(String datetime, @NonNull DateTimeFormatter formatter) {
+        private static TemporalAccessor parseFromISO8601(String datetime, @NotNull DateTimeFormatter formatter) {
             try {
                 return formatter.parse(Strings.requireNotBlank(datetime));
             } catch (DateTimeParseException e) {
@@ -113,7 +111,7 @@ public final class DateTimes {
             }
         }
 
-        public static Object parse(@NonNull Class<?> cls, String value) {
+        public static Object parse(@NotNull Class<?> cls, String value) {
             if (Strings.isBlank(value)) {
                 return null;
             }
@@ -157,23 +155,23 @@ public final class DateTimes {
      */
     public static class Iso8601Formatter {
 
-        public static String formatDate(@NonNull ZonedDateTime zonedDate) {
+        public static String formatDate(@NotNull ZonedDateTime zonedDate) {
             return zonedDate.format(DateTimeFormatter.ISO_OFFSET_DATE);
         }
 
-        public static String formatDate(@NonNull OffsetDateTime offsetDate) {
+        public static String formatDate(@NotNull OffsetDateTime offsetDate) {
             return offsetDate.format(DateTimeFormatter.ISO_OFFSET_DATE);
         }
 
-        public static String formatTime(@NonNull OffsetTime value) {
+        public static String formatTime(@NotNull OffsetTime value) {
             return DateTimeFormatter.ISO_TIME.format(value);
         }
 
-        public static String format(@NonNull ZonedDateTime zonedDateTime) {
+        public static String format(@NotNull ZonedDateTime zonedDateTime) {
             return zonedDateTime.format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
         }
 
-        public static String format(@NonNull OffsetDateTime offsetDateTime) {
+        public static String format(@NotNull OffsetDateTime offsetDateTime) {
             return offsetDateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         }
 

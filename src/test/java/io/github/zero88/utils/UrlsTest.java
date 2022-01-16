@@ -165,6 +165,16 @@ public class UrlsTest {
         assertEquals("/api/:test/:xy", Urls.capturePath("/api/", "/:test", "xy"));
     }
 
+    @Test
+    public void test_capturePatternPath() {
+        assertEquals("/api/client/:client_id/product",
+                     Urls.capturePatternPath("/api/client/{0}/product", "client_id", "any"));
+        assertEquals("/api/client/:client_id/product/:any",
+                     Urls.capturePatternPath("/api/client/{0}/product/{1}", "client_id", "any"));
+        assertEquals("/api/client/:any/product/:any",
+                     Urls.capturePatternPath("/api/client/{1}/product/{1}", "client_id", "any"));
+    }
+
     @Test(expected = InvalidUrlException.class)
     public void test_capturePath_Failed() {
         assertEquals("/api/:test", Urls.capturePath("api", "/test"));

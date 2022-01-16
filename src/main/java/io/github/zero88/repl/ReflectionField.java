@@ -14,13 +14,10 @@ import io.github.zero88.exceptions.ReflectionException;
 import io.github.zero88.utils.Functions;
 import io.github.zero88.utils.Strings;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
 @SuppressWarnings("unchecked")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionField implements ReflectionMember {
+
+    private ReflectionField() {}
 
     /**
      * Find declared fields in given {@code class} that matches with filter
@@ -43,25 +40,25 @@ public final class ReflectionField implements ReflectionMember {
         return (T) stream(clazz, filter).map(field -> getConstant(clazz, field)).findFirst().orElse(null);
     }
 
-    public static <T> List<T> getConstants(@NotNull Class<?> clazz, @NonNull Class<T> fieldClass) {
+    public static <T> List<T> getConstants(@NotNull Class<?> clazz, @NotNull Class<T> fieldClass) {
         return streamConstants(clazz, fieldClass).collect(Collectors.toList());
     }
 
-    public static <T> List<T> getConstants(@NonNull Class<?> clazz, @NonNull Class<T> fieldClass,
-                                           Predicate<Field> predicate) {
+    public static <T> List<T> getConstants(@NotNull Class<?> clazz, @NotNull Class<T> fieldClass,
+        Predicate<Field> predicate) {
         return streamConstants(clazz, fieldClass, predicate).collect(Collectors.toList());
     }
 
-    public static <T> Stream<T> streamConstants(@NonNull Class<T> clazz) {
+    public static <T> Stream<T> streamConstants(@NotNull Class<T> clazz) {
         return streamConstants(clazz, clazz, null);
     }
 
-    public static <T> Stream<T> streamConstants(@NonNull Class<?> clazz, @NonNull Class<T> fieldClass) {
+    public static <T> Stream<T> streamConstants(@NotNull Class<?> clazz, @NotNull Class<T> fieldClass) {
         return streamConstants(clazz, fieldClass, null);
     }
 
-    public static <T> Stream<T> streamConstants(@NonNull Class<?> clazz, @NonNull Class<T> fieldClass,
-                                                Predicate<Field> predicate) {
+    public static <T> Stream<T> streamConstants(@NotNull Class<?> clazz, @NotNull Class<T> fieldClass,
+        Predicate<Field> predicate) {
         Predicate<Field> filter = Functions.and(ReflectionMember.constantPredicate(),
                                                 f -> ReflectionClass.assertDataType(fieldClass, f.getType()));
         if (Objects.nonNull(predicate)) {
@@ -70,7 +67,7 @@ public final class ReflectionField implements ReflectionMember {
         return stream(clazz, filter).map(field -> getConstant(clazz, field));
     }
 
-    public static <T> T getConstant(@NonNull Class<?> clazz, Field field) {
+    public static <T> T getConstant(@NotNull Class<?> clazz, Field field) {
         try {
             return (T) field.get(null);
         } catch (IllegalAccessException | ClassCastException e) {
@@ -79,7 +76,7 @@ public final class ReflectionField implements ReflectionMember {
         }
     }
 
-    public static <T> T getConstant(@NonNull Class<?> clazz, Field field, T fallback) {
+    public static <T> T getConstant(@NotNull Class<?> clazz, Field field, T fallback) {
         try {
             return (T) field.get(null);
         } catch (IllegalAccessException | ClassCastException e) {
@@ -90,7 +87,7 @@ public final class ReflectionField implements ReflectionMember {
         }
     }
 
-    public static <T> List<T> getFieldValuesByType(@NonNull Object obj, @NonNull Class<T> searchType) {
+    public static <T> List<T> getFieldValuesByType(@NotNull Object obj, @NotNull Class<T> searchType) {
         Predicate<Field> predicate = Functions.and(ReflectionMember.notModifiers(Modifier.STATIC),
                                                    f -> ReflectionClass.assertDataType(f.getType(), searchType));
         return stream(obj.getClass(), predicate).map(f -> getFieldValue(obj, f, searchType))
@@ -98,7 +95,7 @@ public final class ReflectionField implements ReflectionMember {
                                                 .collect(Collectors.toList());
     }
 
-    public static <T> T getFieldValue(@NonNull Object obj, @NonNull Field f, @NonNull Class<T> type) {
+    public static <T> T getFieldValue(@NotNull Object obj, @NotNull Field f, @NotNull Class<T> type) {
         try {
             f.setAccessible(true);
             return type.cast(f.get(obj));

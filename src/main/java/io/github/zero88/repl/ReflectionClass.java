@@ -10,18 +10,17 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
+
 import io.github.zero88.exceptions.HiddenException;
 import io.github.zero88.exceptions.ReflectionException;
 import io.github.zero88.utils.Functions.Silencer;
 import io.github.zero88.utils.Strings;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
 @SuppressWarnings("unchecked")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionClass implements ReflectionElement {
+
+    private ReflectionClass() {}
 
     /**
      * @param childClass Given child {@code Class}
@@ -29,7 +28,7 @@ public final class ReflectionClass implements ReflectionElement {
      * @return {@code true} if {@code childClass} is primitive class or class that sub of {@code superClass}
      * @see #assertDataType(Class, Class)
      */
-    public static boolean assertDataType(@NonNull String childClass, @NonNull Class<?> superClass) {
+    public static boolean assertDataType(@NotNull String childClass, @NotNull Class<?> superClass) {
         return assertDataType(Objects.requireNonNull(findClass(childClass), "Not found class [" + childClass + "]"),
                               superClass);
     }
@@ -40,7 +39,7 @@ public final class ReflectionClass implements ReflectionElement {
      * @return {@code true} if {@code childClass} is primitive class or class that sub of {@code superClass}
      * @see Class#isAssignableFrom(Class)
      */
-    public static boolean assertDataType(@NonNull Class<?> childClass, @NonNull Class<?> superClass) {
+    public static boolean assertDataType(@NotNull Class<?> childClass, @NotNull Class<?> superClass) {
         if (childClass.isPrimitive() && superClass.isPrimitive()) {
             return childClass == superClass;
         }
@@ -59,11 +58,11 @@ public final class ReflectionClass implements ReflectionElement {
         return belongsTo(clazzName, "java", "javax", "sun", "com.sun");
     }
 
-    public static boolean belongsTo(@NonNull String clazzName, String... packageNames) {
+    public static boolean belongsTo(@NotNull String clazzName, String... packageNames) {
         return Arrays.stream(packageNames).map(p -> p + ".").anyMatch(clazzName::startsWith);
     }
 
-    public static boolean isJavaLangObject(@NonNull Class<?> clazz) {
+    public static boolean isJavaLangObject(@NotNull Class<?> clazz) {
         return clazz.isPrimitive() || clazz.isEnum() ||
                (!clazz.isArray() && "java.lang".equals(clazz.getPackage().getName()));
     }
@@ -99,7 +98,7 @@ public final class ReflectionClass implements ReflectionElement {
         }
     }
 
-    private static <T> Class<?> getPrimitiveClass(@NonNull Class<T> findClazz) {
+    private static <T> Class<?> getPrimitiveClass(@NotNull Class<T> findClazz) {
         try {
             Field t = findClazz.getField("TYPE");
             if (!ReflectionMember.hasModifiers(Modifier.PUBLIC, Modifier.STATIC).test(t)) {
@@ -130,16 +129,16 @@ public final class ReflectionClass implements ReflectionElement {
      * @return List of matching class
      */
     public static <T> Stream<Class<T>> stream(String pkgName, Class<T> parentCls,
-        @NonNull Class<? extends Annotation> annotationClass) {
+        @NotNull Class<? extends Annotation> annotationClass) {
         return stream(pkgName, parentCls, ReflectionElement.hasAnnotation(annotationClass));
     }
 
-    public static <T> Stream<Class<T>> stream(String pkgName, Class<T> parentCls, @NonNull Predicate<Class<T>> filter) {
+    public static <T> Stream<Class<T>> stream(String pkgName, Class<T> parentCls, @NotNull Predicate<Class<T>> filter) {
         return stream(Reflections.loadScanner(), pkgName, parentCls, filter);
     }
 
     public static <T> Stream<Class<T>> stream(ReflectionScanner scanner, String pkgName, Class<T> parentCls,
-        @NonNull Predicate<Class<T>> filter) {
+        @NotNull Predicate<Class<T>> filter) {
         return (Stream<Class<T>>) scanner.classStream(pkgName, cls -> assertDataType(cls, parentCls))
                                          .map(cls -> (Class<T>) cls)
                                          .filter(filter)
@@ -189,7 +188,7 @@ public final class ReflectionClass implements ReflectionElement {
         return Objects.isNull(aClass) ? null : (T) createObject(aClass);
     }
 
-    public static <T> T createObject(String clazz, @NonNull Arguments arguments) {
+    public static <T> T createObject(String clazz, @NotNull Arguments arguments) {
         final Class<Object> aClass = findClass(clazz);
         return Objects.isNull(aClass) ? null : (T) createObject(aClass, arguments);
     }
@@ -214,8 +213,8 @@ public final class ReflectionClass implements ReflectionElement {
         return silencer;
     }
 
-    public static <T> Silencer<T> createObject(@NonNull Class<T> clazz, @NonNull Arguments arguments,
-        @NonNull Silencer<T> silencer) {
+    public static <T> Silencer<T> createObject(@NotNull Class<T> clazz, @NotNull Arguments arguments,
+        @NotNull Silencer<T> silencer) {
         try {
             final Constructor<T> constructor = clazz.getDeclaredConstructor(arguments.argClasses());
             constructor.setAccessible(true);

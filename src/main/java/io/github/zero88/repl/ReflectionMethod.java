@@ -12,13 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 import io.github.zero88.exceptions.ReflectionException;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
 @SuppressWarnings("unchecked")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionMethod implements ReflectionMember {
+
+    private ReflectionMethod() {}
 
     /**
      * Execute static method
@@ -30,8 +27,8 @@ public final class ReflectionMethod implements ReflectionMember {
      * @param <T>        Type of output
      * @return method result
      */
-    public static <T> T executeStatic(@NonNull Class<?> declareCls, @NonNull Class<T> outputCls,
-                                      @NonNull String methodName, Object... args) {
+    public static <T> T executeStatic(@NotNull Class<?> declareCls, @NotNull Class<T> outputCls,
+        @NotNull String methodName, Object... args) {
         final Predicate<Method> predicate = m -> m.getReturnType().equals(outputCls) && m.getName().equals(methodName);
         return (T) find(predicate, declareCls).findFirst()
                                               .map(method -> doExecute(null, method, Arguments.from(method, args)))
@@ -45,7 +42,7 @@ public final class ReflectionMethod implements ReflectionMember {
      * @param method   a method to execute
      * @return the method result
      */
-    public static Object execute(@NonNull Object instance, @NonNull Method method) {
+    public static Object execute(@NotNull Object instance, @NotNull Method method) {
         return execute(instance, method, new Arguments());
     }
 
@@ -56,7 +53,7 @@ public final class ReflectionMethod implements ReflectionMember {
      * @param method   a method to execute
      * @return the method result
      */
-    public static Object execute(@NonNull Object instance, @NonNull Method method, @NonNull Arguments args) {
+    public static Object execute(@NotNull Object instance, @NotNull Method method, @NotNull Arguments args) {
         Arguments arguments = Arguments.from(method);
         if (!arguments.isSame(args)) {
             throw new ReflectionException("Given arguments does not match the Method signature arguments");
@@ -64,7 +61,7 @@ public final class ReflectionMethod implements ReflectionMember {
         return doExecute(instance, method, args);
     }
 
-    public static <O> O execute(@NonNull Object instance, @NonNull Method method, Object... args) {
+    public static <O> O execute(@NotNull Object instance, @NotNull Method method, Object... args) {
         return (O) doExecute(instance, method, Arguments.from(method, args));
     }
 
@@ -81,13 +78,13 @@ public final class ReflectionMethod implements ReflectionMember {
      * @return the method result
      * @throws ReflectionException if any error when invoke method
      */
-    public static <I, O> O execute(@NonNull Object instance, @NonNull Method method, @NonNull Class<O> outputType,
-                                   @NonNull Class<I> argClass, I argValue) {
+    public static <I, O> O execute(@NotNull Object instance, @NotNull Method method, @NotNull Class<O> outputType,
+        @NotNull Class<I> argClass, I argValue) {
         return execute(instance, method, outputType, new Arguments().put(argClass, argValue));
     }
 
-    public static <O> O execute(@NonNull Object instance, @NonNull Method method, @NonNull Class<O> outputType,
-                                @NonNull Arguments arguments) {
+    public static <O> O execute(@NotNull Object instance, @NotNull Method method, @NotNull Class<O> outputType,
+        @NotNull Arguments arguments) {
         if (!validateMethod(method, outputType, arguments)) {
             throw new IllegalArgumentException("Given method does not match with given output type and input type");
         }
@@ -130,8 +127,8 @@ public final class ReflectionMethod implements ReflectionMember {
      * @param argClasses Given argument classes
      * @return {@code true} if matched, otherwise {@code false}
      */
-    public static boolean validateMethod(@NonNull Method method, @NonNull Class<?> outputType,
-                                         @NonNull Collection<Class<?>> argClasses) {
+    public static boolean validateMethod(@NotNull Method method, @NotNull Class<?> outputType,
+        @NotNull Collection<Class<?>> argClasses) {
         return validateMethod(method, outputType, argClasses.toArray(new Class[] {}));
     }
 
@@ -143,8 +140,8 @@ public final class ReflectionMethod implements ReflectionMember {
      * @param arguments  Given arguments
      * @return {@code true} if matched, otherwise {@code false}
      */
-    public static boolean validateMethod(@NonNull Method method, @NonNull Class<?> outputType,
-                                         @NonNull Arguments arguments) {
+    public static boolean validateMethod(@NotNull Method method, @NotNull Class<?> outputType,
+        @NotNull Arguments arguments) {
         return validateMethod(method, outputType, arguments.argClasses());
     }
 

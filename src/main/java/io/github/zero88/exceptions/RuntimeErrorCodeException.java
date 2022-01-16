@@ -1,24 +1,16 @@
 package io.github.zero88.exceptions;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.EqualsAndHashCode.Include;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
+import java.util.Objects;
 
-@Getter
-@Accessors(fluent = true)
-@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+import org.jetbrains.annotations.NotNull;
+
 public class RuntimeErrorCodeException extends RuntimeException implements ErrorCodeException {
 
-    @Include
     private final ErrorCode errorCode;
 
-    public RuntimeErrorCodeException(ErrorCode code, String message, Throwable e) {
+    public RuntimeErrorCodeException(@NotNull ErrorCode code, String message, Throwable e) {
         super(message, e);
-        this.errorCode = code;
+        this.errorCode = Objects.requireNonNull(code, "Error code is required");
     }
 
     public RuntimeErrorCodeException(ErrorCode code, String message) {this(code, message, null);}
@@ -30,5 +22,37 @@ public class RuntimeErrorCodeException extends RuntimeException implements Error
     public RuntimeErrorCodeException(String message)                 {this(message, null);}
 
     public RuntimeErrorCodeException(Throwable e)                    {this(ErrorCode.UNKNOWN_ERROR, null, e);}
+
+    protected RuntimeErrorCodeException(ErrorCode errorCode)         {this(errorCode, null, null);}
+
+    public @NotNull ErrorCode errorCode() {
+        return this.errorCode;
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof RuntimeErrorCodeException)) {
+            return false;
+        }
+        final RuntimeErrorCodeException other = (RuntimeErrorCodeException) o;
+        if (!other.canEqual(this)) {
+            return false;
+        }
+        final Object this$errorCode = this.errorCode();
+        final Object other$errorCode = other.errorCode();
+        return Objects.equals(this$errorCode, other$errorCode);
+    }
+
+    protected boolean canEqual(final Object other) {return other instanceof RuntimeErrorCodeException;}
+
+    public int hashCode() {
+        final int PRIME = 59;
+        int result = 1;
+        final Object $errorCode = this.errorCode();
+        result = result * PRIME + ($errorCode == null ? 43 : $errorCode.hashCode());
+        return result;
+    }
 
 }

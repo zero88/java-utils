@@ -2,17 +2,14 @@ package io.github.zero88.mock;
 
 import io.github.zero88.exceptions.FileException;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@RequiredArgsConstructor
 public class MockReflection {
 
     private final String id;
-    @Setter
     private String name;
+
+    public MockReflection(String id) {
+        this.id = id;
+    }
 
     public int methodNoArgument() {
         return 1;
@@ -29,5 +26,11 @@ public class MockReflection {
     public void throwUnknownException(String hey) {
         throw new RuntimeException(hey);
     }
+
+    public String getId()            {return this.id;}
+
+    public String getName()          {return this.name;}
+
+    public void setName(String name) {this.name = name;}
 
 }

@@ -4,12 +4,11 @@ import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.UUID;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UUID64 {
+
+    private UUID64() {}
 
     public static String random() {
         return uuidToBase64(UUID.randomUUID());
@@ -19,7 +18,7 @@ public final class UUID64 {
         return uuidToBase64(UUID.fromString(Strings.requireNotBlank(uuidStr)));
     }
 
-    public static String uuidToBase64(@NonNull UUID uuid) {
+    public static String uuidToBase64(@NotNull UUID uuid) {
         byte[] bytes = uuidToBytes(uuid);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }

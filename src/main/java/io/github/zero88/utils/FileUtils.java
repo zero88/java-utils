@@ -24,27 +24,25 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.zero88.exceptions.FileException;
 import io.github.zero88.repl.Reflections;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
 /**
  * File Utilities.
  *
  * @since 1.0.0
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FileUtils {
+
+    private FileUtils() {}
 
     private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
-    public static Path getUserHomePath(@NonNull String directory) {
+    public static Path getUserHomePath(@NotNull String directory) {
         return Paths.get(System.getProperty("user.home"), directory);
     }
 
@@ -267,7 +265,7 @@ public final class FileUtils {
      * @param dir            Given directory. Can be absolute path or relative
      * @return data dir. {@code $HOME/nubeio} if {@code dir} is {@code blank}.
      */
-    public static Path resolveDataFolder(@NonNull Path defaultDataDir, String dir) {
+    public static Path resolveDataFolder(@NotNull Path defaultDataDir, String dir) {
         if (Strings.isNotBlank(dir)) {
             Path path = toPath(dir);
             return path.isAbsolute() ? path : defaultDataDir.resolve(dir);
@@ -275,7 +273,7 @@ public final class FileUtils {
         return defaultDataDir;
     }
 
-    public static boolean isChild(@NonNull Path parent, @NonNull Path child) {
+    public static boolean isChild(@NotNull Path parent, @NotNull Path child) {
         return child.toAbsolutePath().startsWith(parent);
     }
 
@@ -285,7 +283,7 @@ public final class FileUtils {
      * @param fileName given file name
      * @return normalization file name
      */
-    public static String normalize(@NonNull String fileName) {
+    public static String normalize(@NotNull String fileName) {
         return fileName.replaceAll("[\\\\:*?\"<>|]", "_").replaceAll("_+", "_");
     }
 
@@ -298,8 +296,8 @@ public final class FileUtils {
      * @return new data dir path with normalize file name
      * @see #normalize(String)
      */
-    public static Path recomputeDataDir(@NonNull Path defaultDataDir, @NonNull Path dataDir,
-        @NonNull String resolvePath) {
+    public static Path recomputeDataDir(@NotNull Path defaultDataDir, @NotNull Path dataDir,
+        @NotNull String resolvePath) {
         Path path = toPath(resolvePath);
         if (!path.isAbsolute()) {
             return dataDir.resolve(normalize(resolvePath));

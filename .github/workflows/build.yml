@@ -133,7 +133,6 @@ jobs:
           ./gradlew publish "${args[@]}"
 
   release:
-    name: Promote Sonatype OSSRH
     runs-on: ubuntu-latest
     needs: [ context, build, analysis ]
     if: needs.context.outputs.isRelease == 'true'

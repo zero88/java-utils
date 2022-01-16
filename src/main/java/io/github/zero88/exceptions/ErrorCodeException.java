@@ -1,5 +1,7 @@
 package io.github.zero88.exceptions;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface ErrorCodeException {
 
     /**
@@ -8,7 +10,7 @@ public interface ErrorCodeException {
      * @return error code
      * @see ErrorCode
      */
-    ErrorCode errorCode();
+    @NotNull ErrorCode errorCode();
 
     /**
      * Return error message
@@ -20,8 +22,10 @@ public interface ErrorCodeException {
 
     /**
      * Return cause
+     *
      * @return cause
      * @see Exception#getCause()
      */
     Throwable getCause();
+
 }

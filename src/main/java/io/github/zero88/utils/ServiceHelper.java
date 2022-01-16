@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import io.github.zero88.repl.Reflections;
-
-import lombok.NonNull;
 
 /**
  * Helper to load service in {@code META-INF/services} on classpath
@@ -20,19 +19,21 @@ import lombok.NonNull;
  */
 public final class ServiceHelper {
 
+    private ServiceHelper() {}
+
     @Nullable
-    public static <T> T loadFactory(@NonNull Class<T> clazz) {
+    public static <T> T loadFactory(@NotNull Class<T> clazz) {
         return Optional.ofNullable(loadFactory(clazz, Reflections.contextClassLoader()))
                        .orElseGet(() -> loadFactory(clazz, Reflections.staticClassLoader()));
     }
 
     @Nullable
-    public static <T> T loadFactory(@NonNull Class<T> clazz, @NonNull ClassLoader classLoader) {
+    public static <T> T loadFactory(@NotNull Class<T> clazz, @NotNull ClassLoader classLoader) {
         ServiceLoader<T> factories = ServiceLoader.load(clazz, classLoader);
         return factories.iterator().hasNext() ? factories.iterator().next() : null;
     }
 
-    public static <T> T loadFactoryOrThrow(@NonNull Class<T> clazz) {
+    public static <T> T loadFactoryOrThrow(@NotNull Class<T> clazz) {
         T factory = loadFactory(clazz);
         if (factory == null) {
             throw new IllegalStateException("Cannot find META-INF/services/" + clazz.getName() + " on classpath");

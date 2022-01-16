@@ -34,14 +34,10 @@ dependencies {
     api(Libs.slf4j)
     implementation(Libs.jacksonAnnotation)
     implementation(Libs.jetbrainsAnnotation)
-    compileOnly(Libs.lombok)
-    annotationProcessor(Libs.lombok)
 
     testImplementation(Libs.junit4)
     testImplementation(Libs.junit5Vintage)
     testImplementation(Libs.logback)
-    testCompileOnly(Libs.lombok)
-    testAnnotationProcessor(Libs.lombok)
 }
 
 oss {

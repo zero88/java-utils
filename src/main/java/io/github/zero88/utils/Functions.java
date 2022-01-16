@@ -10,21 +10,19 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.zero88.exceptions.HiddenException;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Functions {
+
+    private Functions() {}
 
     private static final Logger logger = LoggerFactory.getLogger(Functions.class);
 
-    public static <T> Optional<T> getIfThrow(Consumer<Throwable> consumer, @NonNull Provider<T> provider) {
+    public static <T> Optional<T> getIfThrow(Consumer<Throwable> consumer, @NotNull Provider<T> provider) {
         try {
             return Optional.ofNullable(provider.get());
         } catch (Throwable t) {
@@ -33,8 +31,8 @@ public final class Functions {
         }
     }
 
-    public static <T> T getOrThrow(@NonNull Function<Throwable, ? extends RuntimeException> override,
-                                   @NonNull Provider<T> provider) {
+    public static <T> T getOrThrow(@NotNull Function<Throwable, ? extends RuntimeException> override,
+        @NotNull Provider<T> provider) {
         try {
             return provider.get();
         } catch (Throwable t) {
@@ -42,11 +40,11 @@ public final class Functions {
         }
     }
 
-    public static <T> Optional<T> getIfThrow(@NonNull Supplier<T> supplier) {
+    public static <T> Optional<T> getIfThrow(@NotNull Supplier<T> supplier) {
         return getIfThrow(supplier, throwable -> logger.trace("", throwable));
     }
 
-    public static <T> Optional<T> getIfThrow(@NonNull Supplier<T> supplier, Consumer<Throwable> consumer) {
+    public static <T> Optional<T> getIfThrow(@NotNull Supplier<T> supplier, Consumer<Throwable> consumer) {
         try {
             return Optional.ofNullable(supplier.get());
         } catch (Exception t) {
@@ -55,8 +53,8 @@ public final class Functions {
         }
     }
 
-    public static <T> T getOrThrow(@NonNull Supplier<T> supplier,
-                                   @NonNull Supplier<? extends RuntimeException> override) {
+    public static <T> T getOrThrow(@NotNull Supplier<T> supplier,
+        @NotNull Supplier<? extends RuntimeException> override) {
         try {
             return supplier.get();
         } catch (Exception t) {
@@ -64,8 +62,8 @@ public final class Functions {
         }
     }
 
-    public static <T> T getOrThrow(@NonNull Supplier<T> supplier,
-                                   @NonNull Function<Throwable, ? extends RuntimeException> override) {
+    public static <T> T getOrThrow(@NotNull Supplier<T> supplier,
+        @NotNull Function<Throwable, ? extends RuntimeException> override) {
         try {
             return supplier.get();
         } catch (Exception e) {
@@ -77,7 +75,7 @@ public final class Functions {
         }
     }
 
-    public static <T> T getOrDefault(@NonNull Supplier<T> supplier, @NonNull Supplier<T> def) {
+    public static <T> T getOrDefault(@NotNull Supplier<T> supplier, @NotNull Supplier<T> def) {
         try {
             return supplier.get();
         } catch (Exception t) {
@@ -88,7 +86,7 @@ public final class Functions {
         }
     }
 
-    public static <T> T getOrDefault(T def, @NonNull Provider<T> provider) {
+    public static <T> T getOrDefault(T def, @NotNull Provider<T> provider) {
         try {
             return provider.get();
         } catch (Throwable t) {

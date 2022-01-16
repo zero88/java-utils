@@ -1,7 +1,6 @@
 package io.github.zero88.utils;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -9,21 +8,18 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.SneakyThrows;
 
 /**
  * Strings Utilities.
  *
  * @since 1.0.0
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Strings {
+
+    private Strings() {}
 
     private static final Logger logger = LoggerFactory.getLogger(Strings.class);
 
@@ -127,7 +123,7 @@ public final class Strings {
      * @return Trimmed {@code text} if not {@code blank}
      * @since 1.0.0
      */
-    public static String requireNotBlank(String text, @NonNull Supplier<? extends RuntimeException> errorSupplier) {
+    public static String requireNotBlank(String text, @NotNull Supplier<? extends RuntimeException> errorSupplier) {
         if (isBlank(text)) {
             throw errorSupplier.get();
         }
@@ -161,7 +157,7 @@ public final class Strings {
      * @return the t
      * @since 1.0.0
      */
-    public static <T> T requireNotBlank(T obj, @NonNull Supplier<? extends RuntimeException> errorSupplier) {
+    public static <T> T requireNotBlank(T obj, @NotNull Supplier<? extends RuntimeException> errorSupplier) {
         if (Objects.isNull(obj) || (obj instanceof String && isBlank(obj.toString()))) {
             throw errorSupplier.get();
         }
@@ -219,7 +215,7 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
-    public static String toSnakeLowerCase(@NonNull String text) {
+    public static String toSnakeLowerCase(@NotNull String text) {
         return toSnakeCase(text, false);
     }
 
@@ -230,7 +226,7 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
-    public static String toSnakeUpperCase(@NonNull String text) {
+    public static String toSnakeUpperCase(@NotNull String text) {
         return toSnakeCase(text, true);
     }
 
@@ -242,7 +238,7 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
-    private static String toSnakeCase(@NonNull String text, boolean upper) {
+    private static String toSnakeCase(@NotNull String text, boolean upper) {
         return transform(text, upper, "_");
     }
 
@@ -255,7 +251,7 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
-    static String transform(@NonNull String text, boolean upper, String separate) {
+    static String transform(@NotNull String text, boolean upper, String separate) {
         if (upper && text.equals(text.toUpperCase())) {
             return text;
         }
@@ -293,11 +289,12 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
-    @SneakyThrows(UnsupportedEncodingException.class)
     public static String convertToString(InputStream inputStream) {
         return Objects.isNull(inputStream)
                ? null
-               : FileUtils.convertToByteArray(inputStream).toString(StandardCharsets.UTF_8.name());
+               : Functions.getOrThrow(t -> new RuntimeException("Unsupported UTF-8 encoding", t),
+                                      () -> FileUtils.convertToByteArray(inputStream)
+                                                     .toString(StandardCharsets.UTF_8.name()));
     }
 
     /**
@@ -333,7 +330,7 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
-    public static String fallback(String value, @NonNull Supplier<String> fallback) {
+    public static String fallback(String value, @NotNull Supplier<String> fallback) {
         return Strings.isBlank(value) ? fallback.get() : value;
     }
 

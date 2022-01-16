@@ -1,6 +1,6 @@
 package io.github.zero88.exceptions;
 
-import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public class HiddenException extends RuntimeErrorCodeException {
 
@@ -20,7 +20,7 @@ public class HiddenException extends RuntimeErrorCodeException {
         this(null, e);
     }
 
-    public HiddenException(@NonNull RuntimeErrorCodeException e) {
+    public HiddenException(@NotNull RuntimeErrorCodeException e) {
         this(e.errorCode(), e.getMessage(), e);
     }
 

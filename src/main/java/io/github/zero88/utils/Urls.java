@@ -1,6 +1,5 @@
 package io.github.zero88.utils;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -12,12 +11,9 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import io.github.zero88.exceptions.InvalidUrlException;
+import org.jetbrains.annotations.NotNull;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.SneakyThrows;
+import io.github.zero88.exceptions.InvalidUrlException;
 
 /**
  * URL Utilities.
@@ -27,8 +23,9 @@ import lombok.SneakyThrows;
  * @see <a href="https://tools.ietf.org/html/rfc3986#section-2">Character encoding</a>
  * @since 1.0.0
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Urls {
+
+    private Urls() {}
 
     public static final String HOST_PATTERN = "(www\\.)?(([\\w-]+\\.)+[\\w]{2,63}|[\\w-\\.]+)/?";
     /**
@@ -139,12 +136,12 @@ public final class Urls {
         return validate(path, PATH_PATTERN);
     }
 
-    public static String combinePath(@NonNull String... path) {
+    public static String combinePath(String... path) {
         return normalize(
             PATH_SEP_CHAR + Arrays.stream(path).filter(Strings::isNotBlank).collect(Collectors.joining(PATH_SEP_CHAR)));
     }
 
-    public static String normalize(@NonNull String url) {
+    public static String normalize(String url) {
         return url.replaceAll("/+", PATH_SEP_CHAR).replaceAll("^(https?:)/", "$1//");
     }
 
@@ -210,10 +207,10 @@ public final class Urls {
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.3">Unreserved Characters</a>
      * @see <a href="https://tools.ietf.org/html/rfc3986#section-2.4">When to Encode or Decode</a>
      */
-    @SneakyThrows(UnsupportedEncodingException.class)
     public static String encode(String plain) {
         Objects.requireNonNull(plain, "Cannot encode null object");
-        String encoded = URLEncoder.encode(plain, StandardCharsets.UTF_8.name());
+        String encoded = Functions.getOrThrow(t -> new RuntimeException("Unsupported UTF-8 encoding", t),
+                                              () -> URLEncoder.encode(plain, StandardCharsets.UTF_8.name()));
         for (Map.Entry<String, String> rule : ENCODING_RULES.entrySet()) {
             encoded = applyRule(encoded, rule.getKey(), rule.getValue());
         }
@@ -226,24 +223,24 @@ public final class Urls {
      * @param encoded Encoded value to decode
      * @return Plain text
      */
-    @SneakyThrows(UnsupportedEncodingException.class)
     public static String decode(String encoded) {
         Objects.requireNonNull(encoded, "Cannot decode null object");
-        return URLDecoder.decode(encoded, StandardCharsets.UTF_8.name());
+        return Functions.getOrThrow(t -> new RuntimeException("Unsupported UTF-8 encoding"),
+                                    () -> URLDecoder.decode(encoded, StandardCharsets.UTF_8.name()));
     }
 
     /**
-     * Construct a capture path that is plain text
+     * Construct a capture path from the static path
      * <p>
      * For example: {@code /catalogue/products/:product_type/:product_id}
      *
      * @param path   Path
      * @param params list of param name
-     * @return capture path
+     * @return the capture path
      * @see #capturePatternPath(String, String...)
      */
-    public static String capturePath(@NonNull String path, String... params) {
-        String p = normalize(PATH_SEP_CHAR + path);
+    public static String capturePath(@NotNull String path, String... params) {
+        String p = combinePath(PATH_SEP_CHAR, path);
         String pns = Arrays.stream(params)
                            .filter(Strings::isNotBlank)
                            .map(Urls::toCapture)
@@ -253,15 +250,13 @@ public final class Urls {
 
     /**
      * Construct a capture path from the pattern path. For example: {@code /points/{0}/type/{1}}
-     * <p>
-     * For example: {@code /points/:id/type/:type_id}
      *
-     * @param path   Pattern path. E.g:
+     * @param path   Pattern path
      * @param params list of param name
      * @return capture path
      */
-    public static String capturePatternPath(@NonNull String path, String... params) {
-        String p = normalize(PATH_SEP_CHAR + path);
+    public static String capturePatternPath(@NotNull String path, String... params) {
+        String p = combinePath(PATH_SEP_CHAR, path);
         Object[] pns = Arrays.stream(params).filter(Strings::isNotBlank).map(Urls::toCapture).toArray(String[]::new);
         return normalize(Strings.format(p, pns));
     }
@@ -270,7 +265,7 @@ public final class Urls {
         return encoded.replaceAll(Pattern.quote(toReplace), replacement);
     }
 
-    public static String toPathWithLC(@NonNull String text) {
+    public static String toPathWithLC(@NotNull String text) {
         return Strings.transform(text, false, "-").replaceAll("_", "-");
     }
 
