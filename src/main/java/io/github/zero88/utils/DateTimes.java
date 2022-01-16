@@ -82,6 +82,8 @@ public final class DateTimes {
      */
     public static class Iso8601Parser {
 
+        private Iso8601Parser() {}
+
         public static Instant parse(@NotNull String datetime) {
             return Instant.from(parseFromISO8601(datetime, DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         }
@@ -154,6 +156,8 @@ public final class DateTimes {
      * @see <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO_8601</a>
      */
     public static class Iso8601Formatter {
+
+        private Iso8601Formatter() {}
 
         public static String formatDate(@NotNull ZonedDateTime zonedDate) {
             return zonedDate.format(DateTimeFormatter.ISO_OFFSET_DATE);
