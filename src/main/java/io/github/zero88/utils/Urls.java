@@ -265,7 +265,7 @@ public final class Urls {
         return encoded.replaceAll(Pattern.quote(toReplace), replacement);
     }
 
-    public static String toPathWithLC(@NotNull String text) {
+    public static String toLowercasePath(@NotNull String text) {
         return Strings.transform(text, false, "-").replaceAll("_", "-");
     }
 
