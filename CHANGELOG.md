@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.0.0](https://github.com/zero88/java-utils/tree/release/2.0.0) (2022-01-16)
+
+### Changed
+
+- Support Java 11 and Java 17
+- [Reflection] Improve Reflection methods
+- [ServiceLoader] Add ServiceHelper
+
 ## [v1.0.1](https://github.com/zero88/java-utils/tree/release/1.0.1) (2020-12-15)
 
 ### Changed
