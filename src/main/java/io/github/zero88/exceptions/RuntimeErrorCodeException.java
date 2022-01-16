@@ -29,30 +29,21 @@ public class RuntimeErrorCodeException extends RuntimeException implements Error
         return this.errorCode;
     }
 
-    public boolean equals(final Object o) {
-        if (o == this) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(o instanceof RuntimeErrorCodeException)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final RuntimeErrorCodeException other = (RuntimeErrorCodeException) o;
-        if (!other.canEqual(this)) {
-            return false;
-        }
-        final Object this$errorCode = this.errorCode();
-        final Object other$errorCode = other.errorCode();
-        return Objects.equals(this$errorCode, other$errorCode);
+        RuntimeErrorCodeException that = (RuntimeErrorCodeException) o;
+        return errorCode.equals(that.errorCode);
     }
 
-    protected boolean canEqual(final Object other) {return other instanceof RuntimeErrorCodeException;}
-
+    @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final Object $errorCode = this.errorCode();
-        result = result * PRIME + ($errorCode == null ? 43 : $errorCode.hashCode());
-        return result;
+        return errorCode.hashCode();
     }
 
 }
