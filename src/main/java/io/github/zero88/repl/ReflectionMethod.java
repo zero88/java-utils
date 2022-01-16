@@ -12,9 +12,12 @@ import org.jetbrains.annotations.NotNull;
 
 import io.github.zero88.exceptions.ReflectionException;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionMethod implements ReflectionMember {
 
     /**

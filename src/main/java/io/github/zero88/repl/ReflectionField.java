@@ -14,9 +14,12 @@ import io.github.zero88.exceptions.ReflectionException;
 import io.github.zero88.utils.Functions;
 import io.github.zero88.utils.Strings;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionField implements ReflectionMember {
 
     /**

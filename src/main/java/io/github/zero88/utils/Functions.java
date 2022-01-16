@@ -129,14 +129,6 @@ public final class Functions {
         return UUID64::uuid64ToUuid;
     }
 
-    @FunctionalInterface
-    public interface Provider<T> {
-
-        T get() throws Throwable;
-
-    }
-
-
     public static class Silencer<T> implements BiConsumer<T, HiddenException>, Supplier<T> {
 
         protected T object;

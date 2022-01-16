@@ -252,11 +252,11 @@ public final class Urls {
     }
 
     /**
-     * Construct a capture path that is pattern
+     * Construct a capture path from the pattern path. For example: {@code /points/{0}/type/{1}}
      * <p>
      * For example: {@code /points/:id/type/:type_id}
      *
-     * @param path   Pattern path. E.g: /points/{0}/type/{1}
+     * @param path   Pattern path. E.g:
      * @param params list of param name
      * @return capture path
      */

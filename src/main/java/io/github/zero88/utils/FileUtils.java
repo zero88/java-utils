@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.zero88.exceptions.FileException;
+import io.github.zero88.repl.Reflections;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,8 +44,8 @@ public final class FileUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
-    public static Path defaultDatadir(@NonNull String root) {
-        return Paths.get(System.getProperty("user.home"), root);
+    public static Path getUserHomePath(@NonNull String directory) {
+        return Paths.get(System.getProperty("user.home"), directory);
     }
 
     /**
@@ -107,7 +108,7 @@ public final class FileUtils {
             return fileInWorkingDir;
         }
         logger.debug("Not found in working dir. Try to get file {} in classloader", classpathFile);
-        final URL resource = FileUtils.class.getClassLoader().getResource(Strings.requireNotBlank(classpathFile));
+        final URL resource = Reflections.staticClassLoader().getResource(Strings.requireNotBlank(classpathFile));
         if (Objects.isNull(resource)) {
             logger.debug("File not found {}", classpathFile);
             throw new FileException("File not found " + classpathFile);
@@ -298,7 +299,7 @@ public final class FileUtils {
      * @see #normalize(String)
      */
     public static Path recomputeDataDir(@NonNull Path defaultDataDir, @NonNull Path dataDir,
-                                        @NonNull String resolvePath) {
+        @NonNull String resolvePath) {
         Path path = toPath(resolvePath);
         if (!path.isAbsolute()) {
             return dataDir.resolve(normalize(resolvePath));

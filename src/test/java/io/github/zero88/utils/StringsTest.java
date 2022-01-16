@@ -162,9 +162,9 @@ public class StringsTest {
 
     @Test
     public void test_toSnakeCase() {
-        assertEquals("test", Strings.toSnakeCase("test", false));
-        assertEquals("test_abc", Strings.toSnakeCase("TestAbc", false));
-        assertEquals("test_abc", Strings.toSnakeCase("test_abc", false));
+        assertEquals("test", Strings.toSnakeLowerCase("test"));
+        assertEquals("test_abc", Strings.toSnakeLowerCase("TestAbc"));
+        assertEquals("test_abc", Strings.toSnakeLowerCase("test_abc"));
     }
 
     @Test

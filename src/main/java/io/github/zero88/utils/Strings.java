@@ -219,7 +219,7 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
-    public static String toSnakeCaseLC(@NonNull String text) {
+    public static String toSnakeLowerCase(@NonNull String text) {
         return toSnakeCase(text, false);
     }
 
@@ -230,7 +230,7 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
-    public static String toSnakeCaseUC(@NonNull String text) {
+    public static String toSnakeUpperCase(@NonNull String text) {
         return toSnakeCase(text, true);
     }
 
@@ -242,7 +242,7 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
-    public static String toSnakeCase(@NonNull String text, boolean upper) {
+    private static String toSnakeCase(@NonNull String text, boolean upper) {
         return transform(text, upper, "_");
     }
 
@@ -255,7 +255,7 @@ public final class Strings {
      * @return the string
      * @since 1.0.0
      */
-    public static String transform(@NonNull String text, boolean upper, String separate) {
+    static String transform(@NonNull String text, boolean upper, String separate) {
         if (upper && text.equals(text.toUpperCase())) {
             return text;
         }
@@ -455,7 +455,6 @@ public final class Strings {
      * @param length      total length
      * @return padded string
      */
-
     public static String padLeftZeros(String inputString, int length) {
         return doPadLeft(inputString, length, '0');
     }

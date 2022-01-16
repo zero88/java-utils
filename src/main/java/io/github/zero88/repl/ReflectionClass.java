@@ -15,9 +15,12 @@ import io.github.zero88.exceptions.ReflectionException;
 import io.github.zero88.utils.Functions.Silencer;
 import io.github.zero88.utils.Strings;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionClass implements ReflectionElement {
 
     /**
@@ -27,7 +30,8 @@ public final class ReflectionClass implements ReflectionElement {
      * @see #assertDataType(Class, Class)
      */
     public static boolean assertDataType(@NonNull String childClass, @NonNull Class<?> superClass) {
-        return assertDataType(findClass(childClass), superClass);
+        return assertDataType(Objects.requireNonNull(findClass(childClass), "Not found class [" + childClass + "]"),
+                              superClass);
     }
 
     /**
@@ -126,7 +130,7 @@ public final class ReflectionClass implements ReflectionElement {
      * @return List of matching class
      */
     public static <T> Stream<Class<T>> stream(String pkgName, Class<T> parentCls,
-                                              @NonNull Class<? extends Annotation> annotationClass) {
+        @NonNull Class<? extends Annotation> annotationClass) {
         return stream(pkgName, parentCls, ReflectionElement.hasAnnotation(annotationClass));
     }
 
@@ -135,7 +139,7 @@ public final class ReflectionClass implements ReflectionElement {
     }
 
     public static <T> Stream<Class<T>> stream(ReflectionScanner scanner, String pkgName, Class<T> parentCls,
-                                              @NonNull Predicate<Class<T>> filter) {
+        @NonNull Predicate<Class<T>> filter) {
         return (Stream<Class<T>>) scanner.classStream(pkgName, cls -> assertDataType(cls, parentCls))
                                          .map(cls -> (Class<T>) cls)
                                          .filter(filter)
@@ -211,7 +215,7 @@ public final class ReflectionClass implements ReflectionElement {
     }
 
     public static <T> Silencer<T> createObject(@NonNull Class<T> clazz, @NonNull Arguments arguments,
-                                               @NonNull Silencer<T> silencer) {
+        @NonNull Silencer<T> silencer) {
         try {
             final Constructor<T> constructor = clazz.getDeclaredConstructor(arguments.argClasses());
             constructor.setAccessible(true);

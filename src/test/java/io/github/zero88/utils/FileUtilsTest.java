@@ -16,11 +16,12 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import io.github.zero88.exceptions.FileException;
+import io.github.zero88.repl.Reflections;
 
 public class FileUtilsTest {
 
-    private static final URL RESOURCE = FileUtilsTest.class.getClassLoader().getResource("none_private_key.txt");
-    private static final Path DEFAULT_DATADIR = FileUtils.defaultDatadir(".test");
+    private static final URL RESOURCE = Reflections.staticClassLoader().getResource("none_private_key.txt");
+    private static final Path DEFAULT_DATADIR = FileUtils.getUserHomePath(".test");
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
