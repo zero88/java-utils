@@ -7,11 +7,15 @@ on:
     paths-ignore:
       - '.github/ISSUE_TEMPLATE/**'
       - '.github/*.yml'
-      - '*.md'
       - 'LICENSE'
   pull_request:
     types: [ opened, synchronize, reopened, closed ]
     branches: [ master ]
+    paths-ignore:
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/*.yml'
+      - 'LICENSE'
+
 
 env:
   ENABLE_TEST: true
