@@ -266,7 +266,7 @@ public final class Urls {
     }
 
     public static String toLowercasePath(@NotNull String text) {
-        return Strings.transform(text, false, "-").replaceAll("_", "-");
+        return Strings.transform(text, false, "-").replace("_", "-");
     }
 
     public static String toCapture(String param) {
