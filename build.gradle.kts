@@ -7,11 +7,10 @@ plugins {
 
 object Libs {
 
-    const val slf4j = "org.slf4j:slf4j-api:1.7.30"
-    const val jetbrainsAnnotation = "org.jetbrains:annotations:20.1.0"
-    const val logback = "ch.qos.logback:logback-classic:1.2.3"
-    const val jacksonAnnotation = "com.fasterxml.jackson.core:jackson-annotations:2.12.0"
-    const val lombok = "org.projectlombok:lombok:1.18.16"
+    const val slf4j = "org.slf4j:slf4j-api:1.7.32"
+    const val jetbrainsAnnotation = "org.jetbrains:annotations:23.0.0"
+    const val logback = "ch.qos.logback:logback-classic:1.2.10"
+    const val jacksonAnnotation = "com.fasterxml.jackson.core:jackson-annotations:2.13.1"
     const val junit4 = "junit:junit:4.13"
     const val junit5Vintage = "org.junit.vintage:junit-vintage-engine:5.7.0"
 }
@@ -28,6 +27,7 @@ repositories {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
@@ -44,6 +44,7 @@ oss {
     zero88.set(true)
     publishingInfo {
         homepage.set("https://github.com/zero88/java-utils")
+        description.set("Java Utils")
         license {
             name.set("The Apache License, Version 2.0")
             url.set("https://github.com/zero88/java-utils/blob/master/LICENSE")
